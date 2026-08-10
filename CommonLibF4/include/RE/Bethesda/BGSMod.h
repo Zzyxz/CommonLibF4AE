@@ -129,7 +129,7 @@ namespace RE::BGSMod
 	{
 		[[nodiscard]] inline BSTHashMap<const Mod*, TESObjectMISC*>& GetAllLooseMods()
 		{
-			REL::Relocation<BSTHashMap<const Mod*, TESObjectMISC*>*> mods{ REL::ID(1108112), -0x8 };
+			REL::Relocation<BSTHashMap<const Mod*, TESObjectMISC*>*> mods{ REL::ID(2661617), -0x8 };
 			return *mods;
 		}
 

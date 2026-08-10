@@ -85,7 +85,7 @@ namespace RE
 		[[nodiscard]] std::uint32_t GetTESChunk()
 		{
 			using func_t = decltype(&TESFile::GetTESChunk);
-			REL::Relocation<func_t> func{ REL::ID(641361) };
+			REL::Relocation<func_t> func{ REL::ID(2192536) };
 			return func(this);
 		}
 

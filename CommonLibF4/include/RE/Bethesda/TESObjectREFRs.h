@@ -243,7 +243,7 @@ namespace RE
 			bool a_alwaysContinue = false)
 		{
 			using func_t = decltype(&BGSInventoryList::FindAndWriteStackDataForItem);
-			REL::Relocation<func_t> func{ REL::ID(1354005) };
+			REL::Relocation<func_t> func{ REL::ID(2194179) };
 			return func(this, a_object, a_compareFunc, a_writeFunc, a_objCompFn, a_alwaysContinue);
 		}
 
@@ -323,7 +323,7 @@ namespace RE
 		void Dtor()
 		{
 			using func_t = decltype(&BIPOBJECT::Dtor);
-			REL::Relocation<func_t> func{ REL::ID(765242) };
+			REL::Relocation<func_t> func{ REL::ID(2194330) };
 			return func(this);
 		}
 	};
@@ -505,7 +505,7 @@ namespace RE
 		[[nodiscard]] float GetWeightInContainer()
 		{
 			using func_t = decltype(&TESObjectREFR::GetWeightInContainer);
-			REL::Relocation<func_t> func{ REL::ID(1377567) };
+			REL::Relocation<func_t> func{ REL::ID(2201001) };
 			return func(this);
 		}
 

@@ -102,7 +102,7 @@ namespace RE
 		void ApplyMods(BSTSmartPointer<TBO_InstanceData>& a_dest, const BGSObjectInstanceExtra* a_extra) const
 		{
 			using func_t = decltype(&TESBoundObject::ApplyMods);
-			REL::Relocation<func_t> func{ REL::ID(113585) };
+			REL::Relocation<func_t> func{ REL::ID(2198325) };
 			return func(this, a_dest, a_extra);
 		}
 

@@ -278,7 +278,7 @@ namespace RE
 		std::uint16_t paramCount{ 0 };                                                                       // 22
 		SCRIPT_PARAMETER* parameters{ nullptr };                                                             // 28
 		ExecuteFunction_t* executeFunction{ nullptr };                                                       // 30
-		CompileFunction_t* compileFunction{ REL::Relocation<CompileFunction_t*>{ REL::ID(638606) }.get() };  // 38
+		CompileFunction_t* compileFunction{ REL::Relocation<CompileFunction_t*>{ REL::ID(2204343) }.get() };  // 38
 		ConditionFunction_t* conditionFunction{ nullptr };                                                   // 40
 		bool editorFilter{ false };                                                                          // 48
 		bool invalidatesCellList{ false };                                                                   // 49
@@ -304,14 +304,14 @@ namespace RE
 		{
 			static_assert((std::is_pointer_v<Args> && ...), "arguments must all be pointers");
 			using func_t = bool(const SCRIPT_PARAMETER*, const char*, std::uint32_t&, TESObjectREFR*, TESObjectREFR*, Script*, ScriptLocals*, ...);
-			REL::Relocation<func_t> func{ REL::ID(1607) };
+			REL::Relocation<func_t> func{ REL::ID(2204298) };
 			return func(a_parameters, a_compiledParams, a_offset, a_refObject, a_container, a_script, a_scriptLocals, a_args...);
 		}
 
 		void CompileAndRun(ScriptCompiler* a_compiler, COMPILER_NAME a_compilerIndex, TESObjectREFR* a_ownerObject)
 		{
 			using func_t = decltype(&Script::CompileAndRun);
-			REL::Relocation<func_t> func{ REL::ID(526625) };
+			REL::Relocation<func_t> func{ REL::ID(2204287) };
 			return func(this, a_compiler, a_compilerIndex, a_ownerObject);
 		}
 

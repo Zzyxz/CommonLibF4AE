@@ -124,14 +124,14 @@ namespace RE
 			[[nodiscard]] static Renderer* GetByName(const BSFixedString& a_name)
 			{
 				using func_t = decltype(&Renderer::GetByName);
-				REL::Relocation<func_t> func{ REL::ID(140387) };
+				REL::Relocation<func_t> func{ REL::ID(2222524) };
 				return func(a_name);
 			}
 
 			void Enable(bool a_unhideGeometries = false)
 			{
 				using func_t = decltype(&Renderer::Enable);
-				REL::Relocation<func_t> func{ REL::ID(326895) };
+				REL::Relocation<func_t> func{ REL::ID(2222522) };
 				return func(this, a_unhideGeometries);
 			}
 

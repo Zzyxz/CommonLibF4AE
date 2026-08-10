@@ -175,7 +175,7 @@ namespace RE
 
 		[[nodiscard]] static PlayerCamera* GetSingleton()
 		{
-			REL::Relocation<PlayerCamera**> singleton{ REL::ID(1171980) };
+			REL::Relocation<PlayerCamera**> singleton{ REL::ID(4796065) };
 			return *singleton;
 		}
 

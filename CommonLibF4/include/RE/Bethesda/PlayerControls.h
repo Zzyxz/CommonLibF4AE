@@ -120,7 +120,7 @@ namespace RE
 
 		static PlayerControls* GetSingleton()
 		{
-			REL::Relocation<PlayerControls**> singleton{ REL::ID(544871) };
+			REL::Relocation<PlayerControls**> singleton{ REL::ID(4799306) };
 			return *singleton;
 		}
 
@@ -158,7 +158,7 @@ namespace RE
 		void DoRegisterHandler(PlayerInputHandler* a_handler, bool a_isHeldStateHandler)
 		{
 			using func_t = decltype(&PlayerControls::DoRegisterHandler);
-			REL::Relocation<func_t> func{ REL::ID(177801) };
+			REL::Relocation<func_t> func{ REL::ID(2234822) };
 			return func(this, a_handler, a_isHeldStateHandler);
 		}
 	};

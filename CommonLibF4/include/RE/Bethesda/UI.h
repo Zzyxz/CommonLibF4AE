@@ -61,13 +61,13 @@ namespace RE
 
 		[[nodiscard]] static BSReadWriteLock& GetMenuMapRWLock()
 		{
-			REL::Relocation<BSReadWriteLock*> menuMapRWLock{ REL::ID(578487) };
+			REL::Relocation<BSReadWriteLock*> menuMapRWLock{ REL::ID(2707105) };
 			return *menuMapRWLock;
 		}
 
 		[[nodiscard]] static UI* GetSingleton()
 		{
-			REL::Relocation<UI**> singleton{ REL::ID(548587) };
+			REL::Relocation<UI**> singleton{ REL::ID(4796314) };
 			return *singleton;
 		}
 
@@ -95,14 +95,14 @@ namespace RE
 		void RefreshCursor()
 		{
 			using func_t = decltype(&UI::RefreshCursor);
-			REL::Relocation<func_t> func{ REL::ID(1436639) };
+			REL::Relocation<func_t> func{ REL::ID(2284772) };
 			return func(this);
 		}
 
 		void RegisterMenu(const char* a_menu, Create_t* a_create, StaticUpdate_t* a_staticUpdate = nullptr)
 		{
 			using func_t = decltype(&UI::RegisterMenu);
-			REL::Relocation<func_t> func{ REL::ID(1519575) };
+			REL::Relocation<func_t> func{ REL::ID(2284766) };
 			return func(this, a_menu, a_create, a_staticUpdate);
 		}
 
@@ -115,7 +115,7 @@ namespace RE
 		void UpdateControllerType()
 		{
 			using func_t = decltype(&UI::UpdateControllerType);
-			REL::Relocation<func_t> func{ REL::ID(175796) };
+			REL::Relocation<func_t> func{ REL::ID(2284768) };
 			return func(this);
 		}
 
@@ -151,7 +151,7 @@ namespace RE
 		inline void UpdateGamepadDependentButtonCodes(bool a_usingGamepad)
 		{
 			using func_t = decltype(&UpdateGamepadDependentButtonCodes);
-			REL::Relocation<func_t> func{ REL::ID(190238) };
+			REL::Relocation<func_t> func{ REL::ID(4483350) };
 			return func(a_usingGamepad);
 		}
 	}

@@ -32,14 +32,14 @@ namespace RE
 	public:
 		[[nodiscard]] static TESDataHandler* GetSingleton()
 		{
-			REL::Relocation<TESDataHandler**> singleton{ REL::ID(711558) };
+			REL::Relocation<TESDataHandler**> singleton{ REL::ID(4796135) };
 			return *singleton;
 		}
 
 		[[nodiscard]] bool CheckModsLoaded(bool a_everModded)
 		{
 			using func_t = decltype(&TESDataHandler::CheckModsLoaded);
-			REL::Relocation<func_t> func{ REL::ID(1432894) };
+			REL::Relocation<func_t> func{ REL::ID(2192323) };
 			return func(this, a_everModded);
 		}
 

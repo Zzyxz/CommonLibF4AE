@@ -124,14 +124,14 @@ namespace RE
 		void* Allocate(std::size_t a_size, std::size_t a_alignment)
 		{
 			using func_t = decltype(&ScrapHeap::Allocate);
-			REL::Relocation<func_t> func{ REL::ID(1085394) };
+			REL::Relocation<func_t> func{ REL::ID(2267983) };
 			return func(this, a_size, a_alignment);
 		}
 
 		void Deallocate(void* a_mem)
 		{
 			using func_t = decltype(&ScrapHeap::Deallocate);
-			REL::Relocation<func_t> func{ REL::ID(923307) };
+			REL::Relocation<func_t> func{ REL::ID(2267984) };
 			return func(this, a_mem);
 		}
 
@@ -171,14 +171,14 @@ namespace RE
 			AutoScrapBuffer* Ctor()
 			{
 				using func_t = decltype(&AutoScrapBuffer::Ctor);
-				REL::Relocation<func_t> func{ REL::ID(1571567) };
+				REL::Relocation<func_t> func{ REL::ID(2267865) };
 				return func(this);
 			}
 
 			void Dtor()
 			{
 				using func_t = decltype(&AutoScrapBuffer::Dtor);
-				REL::Relocation<func_t> func{ REL::ID(68625) };
+				REL::Relocation<func_t> func{ REL::ID(2267867) };
 				return func(this);
 			}
 		};
@@ -197,42 +197,42 @@ namespace RE
 		[[nodiscard]] static MemoryManager& GetSingleton()
 		{
 			using func_t = decltype(&MemoryManager::GetSingleton);
-			const REL::Relocation<func_t> func{ REL::ID(343176) };
+			const REL::Relocation<func_t> func{ REL::ID(4471522) };
 			return func();
 		}
 
 		[[nodiscard]] void* Allocate(std::size_t a_size, std::uint32_t a_alignment, bool a_alignmentRequired)
 		{
 			using func_t = decltype(&MemoryManager::Allocate);
-			const REL::Relocation<func_t> func{ REL::ID(652767) };
+			const REL::Relocation<func_t> func{ REL::ID(2267872) };
 			return func(this, a_size, a_alignment, a_alignmentRequired);
 		}
 
 		void Deallocate(void* a_mem, bool a_alignmentRequired)
 		{
 			using func_t = decltype(&MemoryManager::Deallocate);
-			const REL::Relocation<func_t> func{ REL::ID(1582181) };
+			const REL::Relocation<func_t> func{ REL::ID(2267874) };
 			return func(this, a_mem, a_alignmentRequired);
 		}
 
 		[[nodiscard]] ScrapHeap* GetThreadScrapHeap()
 		{
 			using func_t = decltype(&MemoryManager::GetThreadScrapHeap);
-			const REL::Relocation<func_t> func{ REL::ID(1495205) };
+			const REL::Relocation<func_t> func{ REL::ID(2267850) };
 			return func(this);
 		}
 
 		[[nodiscard]] void* Reallocate(void* a_oldMem, std::size_t a_newSize, std::uint32_t a_alignment, bool a_alignmentRequired)
 		{
 			using func_t = decltype(&MemoryManager::Reallocate);
-			const REL::Relocation<func_t> func{ REL::ID(1502917) };
+			const REL::Relocation<func_t> func{ REL::ID(2267873) };
 			return func(this, a_oldMem, a_newSize, a_alignment, a_alignmentRequired);
 		}
 
 		void RegisterMemoryManager()
 		{
 			using func_t = decltype(&MemoryManager::RegisterMemoryManager);
-			const REL::Relocation<func_t> func{ REL::ID(453212) };
+			const REL::Relocation<func_t> func{ REL::ID(2228356) };
 			return func(this);
 		}
 

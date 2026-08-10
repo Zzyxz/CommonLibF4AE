@@ -348,7 +348,7 @@ namespace RE
 
 		[[nodiscard]] static BSTHashMap<const TESNPC*, BSTArray<BGSHeadPart*>>& GetAlternateHeadPartListMap()
 		{
-			REL::Relocation<BSTHashMap<const TESNPC*, BSTArray<BGSHeadPart*>>*> map{ REL::ID(1306546), -0x8 };
+			REL::Relocation<BSTHashMap<const TESNPC*, BSTArray<BGSHeadPart*>>*> map{ REL::ID(2662364), -0x8 };
 			return *map;
 		}
 

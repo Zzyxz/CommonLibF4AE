@@ -32,7 +32,7 @@ namespace RE
 		[[nodiscard]] static ActorValue* GetSingleton()
 		{
 			using func_t = decltype(&ActorValue::GetSingleton);
-			REL::Relocation<func_t> func{ REL::ID(405390) };
+			REL::Relocation<func_t> func{ REL::ID(2189587) };
 			return func();
 		}
 

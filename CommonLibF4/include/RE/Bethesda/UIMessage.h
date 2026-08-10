@@ -80,7 +80,7 @@ namespace RE
 		static void SendUIStringUIntMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, std::uint32_t a_data)
 		{
 			using func_t = decltype(&BSUIMessageData::SendUIStringUIntMessage);
-			REL::Relocation<func_t> func{ REL::ID(99795) };
+			REL::Relocation<func_t> func{ REL::ID(2284979) };
 			return func(a_menuName, a_type, a_fixedString, a_data);
 		}
 

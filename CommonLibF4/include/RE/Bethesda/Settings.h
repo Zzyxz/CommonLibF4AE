@@ -296,7 +296,7 @@ namespace RE
 
 		[[nodiscard]] static GameSettingCollection* GetSingleton()
 		{
-			REL::Relocation<GameSettingCollection**> singleton{ REL::ID(8308) };
+			REL::Relocation<GameSettingCollection**> singleton{ REL::ID(4797590) };
 			return *singleton;
 		}
 	};
@@ -311,7 +311,7 @@ namespace RE
 
 		[[nodiscard]] static INISettingCollection* GetSingleton()
 		{
-			REL::Relocation<INISettingCollection**> singleton{ REL::ID(791183) };
+			REL::Relocation<INISettingCollection**> singleton{ REL::ID(2704108) };
 			return *singleton;
 		}
 	};
@@ -326,7 +326,7 @@ namespace RE
 
 		[[nodiscard]] static INIPrefSettingCollection* GetSingleton()
 		{
-			REL::Relocation<INIPrefSettingCollection**> singleton{ REL::ID(767844) };
+			REL::Relocation<INIPrefSettingCollection**> singleton{ REL::ID(2703234) };
 			return *singleton;
 		}
 	};

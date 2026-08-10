@@ -25,7 +25,7 @@ namespace RE
 		static void InitSDM()
 		{
 			using func_t = decltype(&BSThreadEvent::InitSDM);
-			REL::Relocation<func_t> func{ REL::ID(1425097) };
+			REL::Relocation<func_t> func{ REL::ID(2275466) };
 			return func();
 		}
 	};
@@ -186,7 +186,7 @@ namespace RE
 			[[nodiscard]] static CellAttachDetachEventSourceSingleton& GetSingleton()
 			{
 				using func_t = decltype(&CellAttachDetachEventSourceSingleton::GetSingleton);
-				REL::Relocation<func_t> func{ REL::ID(862142) };
+				REL::Relocation<func_t> func{ REL::ID(2192250) };
 				return func();
 			}
 

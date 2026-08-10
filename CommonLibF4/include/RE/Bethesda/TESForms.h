@@ -640,7 +640,7 @@ namespace RE
 		static void AddCompileIndex(std::uint32_t& a_id, TESFile* a_file)
 		{
 			using func_t = decltype(&TESForm::AddCompileIndex);
-			REL::Relocation<func_t> func{ REL::ID(1315637) };
+			REL::Relocation<func_t> func{ REL::ID(2193152) };
 			return func(a_id, a_file);
 		}
 
@@ -649,8 +649,8 @@ namespace RE
 				BSTHashMap<std::uint32_t, TESForm*>*,
 				std::reference_wrapper<BSReadWriteLock>>
 		{
-			REL::Relocation<BSTHashMap<std::uint32_t, TESForm*>**> allForms{ REL::ID(422985) };
-			REL::Relocation<BSReadWriteLock*> allFormsMapLock{ REL::ID(691815) };
+			REL::Relocation<BSTHashMap<std::uint32_t, TESForm*>**> allForms{ REL::ID(4796465) };
+			REL::Relocation<BSReadWriteLock*> allFormsMapLock{ REL::ID(4796476) };
 			return { *allForms, *allFormsMapLock };
 		}
 
@@ -659,15 +659,15 @@ namespace RE
 				BSTHashMap<BSFixedString, TESForm*>*,
 				std::reference_wrapper<BSReadWriteLock>>
 		{
-			REL::Relocation<BSTHashMap<BSFixedString, TESForm*>**> allFormsByEditorID{ REL::ID(642758) };
-			REL::Relocation<BSReadWriteLock*> allFormsEditorIDMapLock{ REL::ID(910917) };
+			REL::Relocation<BSTHashMap<BSFixedString, TESForm*>**> allFormsByEditorID{ REL::ID(4796466) };
+			REL::Relocation<BSReadWriteLock*> allFormsEditorIDMapLock{ REL::ID(4796477) };
 			return { *allFormsByEditorID, *allFormsEditorIDMapLock };
 		}
 
 		[[nodiscard]] TESFile* GetFile(std::int32_t a_index = -1) const
 		{
 			using func_t = decltype(&TESForm::GetFile);
-			REL::Relocation<func_t> func{ REL::ID(1376557) };
+			REL::Relocation<func_t> func{ REL::ID(2193103) };
 			return func(this, a_index);
 		}
 
@@ -734,7 +734,7 @@ namespace RE
 		void SetTemporary()
 		{
 			using func_t = decltype(&TESForm::SetTemporary);
-			REL::Relocation<func_t> func{ REL::ID(482454) };
+			REL::Relocation<func_t> func{ REL::ID(2193125) };
 			return func(this);
 		}
 
@@ -794,7 +794,7 @@ namespace RE
 		[[nodiscard]] static auto GetTypedKeywords()
 			-> std::optional<std::span<BSTArray<BGSKeyword*>, stl::to_underlying(KeywordType::kTotal)>>
 		{
-			REL::Relocation<BSTArray<BGSKeyword*>(*)[stl::to_underlying(KeywordType::kTotal)]> keywords{ REL::ID(1095775) };
+			REL::Relocation<BSTArray<BGSKeyword*>(*)[stl::to_underlying(KeywordType::kTotal)]> keywords{ REL::ID(4799330) };
 			if (*keywords) {
 				return { *keywords };
 			} else {
@@ -1302,7 +1302,7 @@ namespace RE
 		[[nodiscard]] BGSEncounterZone* GetEncounterZone() const
 		{
 			using func_t = decltype(&TESObjectCELL::GetEncounterZone);
-			REL::Relocation<func_t> func{ REL::ID(1414637) };
+			REL::Relocation<func_t> func{ REL::ID(2200242) };
 			return func(this);
 		}
 

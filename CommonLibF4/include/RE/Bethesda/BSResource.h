@@ -287,7 +287,7 @@ namespace RE::BSResource
 
 		[[nodiscard]] static GlobalPaths* GetSingleton()
 		{
-			REL::Relocation<GlobalPaths**> singleton{ REL::ID(210868) };
+			REL::Relocation<GlobalPaths**> singleton{ REL::ID(2703393) };
 			return *singleton;
 		}
 
@@ -317,7 +317,7 @@ namespace RE::BSResource
 
 		[[nodiscard]] static GlobalLocations* GetSingleton()
 		{
-			REL::Relocation<GlobalLocations**> singleton{ REL::ID(1573818) };
+			REL::Relocation<GlobalLocations**> singleton{ REL::ID(2703394) };
 			return *singleton;
 		}
 
@@ -332,7 +332,7 @@ namespace RE::BSResource
 	inline void RegisterLocation(Location* a_location, std::uint32_t a_priority)
 	{
 		using func_t = decltype(&RegisterLocation);
-		REL::Relocation<func_t> func{ REL::ID(918408) };
+		REL::Relocation<func_t> func{ REL::ID(2269481) };
 		return func(a_location, a_priority);
 	}
 }

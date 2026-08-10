@@ -11,14 +11,14 @@ namespace RE
 	public:
 		[[nodiscard]] static ConsoleLog* GetSingleton()
 		{
-			REL::Relocation<ConsoleLog**> singleton{ REL::ID(689441) };
+			REL::Relocation<ConsoleLog**> singleton{ REL::ID(4797437) };
 			return *singleton;
 		}
 
 		void AddString(char const* a_string)
 		{
 			using func_t = decltype(&ConsoleLog::AddString);
-			REL::Relocation<func_t> func{ REL::ID(764) };
+			REL::Relocation<func_t> func{ REL::ID(2248593) };
 			return func(this, a_string);
 		}
 

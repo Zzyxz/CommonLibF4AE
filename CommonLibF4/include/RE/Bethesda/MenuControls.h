@@ -24,7 +24,7 @@ namespace RE
 	public:
 		[[nodiscard]] static MenuControls* GetSingleton()
 		{
-			REL::Relocation<MenuControls**> singleton{ REL::ID(520890) };
+			REL::Relocation<MenuControls**> singleton{ REL::ID(4796375) };
 			return *singleton;
 		}
 

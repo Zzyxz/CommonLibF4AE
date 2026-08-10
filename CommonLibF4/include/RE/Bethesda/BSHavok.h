@@ -21,7 +21,7 @@ namespace RE
 		static bool RemoveObjects(NiAVObject* a_object, bool a_recurse, bool a_force)
 		{
 			using func_t = decltype(&RemoveObjects);
-			REL::Relocation<func_t> func{ REL::ID(1514984) };
+			REL::Relocation<func_t> func{ REL::ID(2277721) };
 			return func(a_object, a_recurse, a_force);
 		}
 

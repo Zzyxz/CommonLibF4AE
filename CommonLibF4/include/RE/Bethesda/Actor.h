@@ -434,14 +434,14 @@ namespace RE
 		[[nodiscard]] TESAmmo* GetCurrentAmmo(BGSEquipIndex a_equipIndex) const
 		{
 			using func_t = decltype(&AIProcess::GetCurrentAmmo);
-			REL::Relocation<func_t> func{ REL::ID(1154936) };
+			REL::Relocation<func_t> func{ REL::ID(2232300) };
 			return func(this, a_equipIndex);
 		}
 
 		void SetCurrentAmmo(BGSEquipIndex a_equipIndex, TESAmmo* a_ammo)
 		{
 			using func_t = decltype(&AIProcess::SetCurrentAmmo);
-			REL::Relocation<func_t> func{ REL::ID(795983) };
+			REL::Relocation<func_t> func{ REL::ID(2232302) };
 			return func(this, a_equipIndex, a_ammo);
 		}
 
@@ -741,7 +741,7 @@ namespace RE
 		[[nodiscard]] bool GetHostileToActor(Actor* a_actor)
 		{
 			using func_t = decltype(&Actor::GetHostileToActor);
-			REL::Relocation<func_t> func{ REL::ID(1148686) };
+			REL::Relocation<func_t> func{ REL::ID(2229968) };
 			return func(this, a_actor);
 		}
 
@@ -750,7 +750,7 @@ namespace RE
 		void Reset3D(bool a_reloadAll, std::uint32_t a_additionalFlags, bool a_queueReset, std::uint32_t a_excludeFlags)
 		{
 			using func_t = decltype(&Actor::Reset3D);
-			REL::Relocation<func_t> func{ REL::ID(302888) };
+			REL::Relocation<func_t> func{ REL::ID(2229913) };
 			return func(this, a_reloadAll, a_additionalFlags, a_queueReset, a_excludeFlags);
 		}
 
@@ -825,7 +825,7 @@ namespace RE
 	public:
 		[[nodiscard]] static ActorEquipManager* GetSingleton()
 		{
-			REL::Relocation<ActorEquipManager**> singleton{ REL::ID(1174340) };
+			REL::Relocation<ActorEquipManager**> singleton{ REL::ID(4798287) };
 			return *singleton;
 		}
 
@@ -842,7 +842,7 @@ namespace RE
 			bool a_locked)
 		{
 			using func_t = decltype(&ActorEquipManager::EquipObject);
-			REL::Relocation<func_t> func{ REL::ID(988029) };
+			REL::Relocation<func_t> func{ REL::ID(2231392) };
 			return func(this, a_actor, a_object, a_stackID, a_number, a_slot, a_queueEquip, a_forceEquip, a_playSounds, a_applyNow, a_locked);
 		}
 
@@ -859,7 +859,7 @@ namespace RE
 			const BGSEquipSlot* a_slotBeingReplaced)
 		{
 			using func_t = decltype(&ActorEquipManager::UnequipObject);
-			REL::Relocation<func_t> func{ REL::ID(1292493) };
+			REL::Relocation<func_t> func{ REL::ID(2231395) };
 			return func(this, a_actor, a_object, a_number, a_slot, a_stackID, a_queueEquip, a_forceEquip, a_playSounds, a_applyNow, a_slotBeingReplaced);
 		}
 	};

@@ -1087,14 +1087,14 @@ namespace RE
 		void GetDescription(BSStringT<char>& a_out, const TESForm* a_form) const
 		{
 			using func_t = decltype(&BGSLocalizedStringDL::GetDescription);
-			REL::Relocation<func_t> func{ REL::ID(523613) };
+			REL::Relocation<func_t> func{ REL::ID(2193019) };
 			return func(this, a_out, a_form);
 		}
 
 		[[nodiscard]] BGSLocalizedStrings::ScrapStringBuffer GetText(TESFile& a_file) const
 		{
 			using func_t = decltype(&BGSLocalizedStringDL::GetText);
-			REL::Relocation<func_t> func{ REL::ID(472297) };
+			REL::Relocation<func_t> func{ REL::ID(2194238) };
 			return func(this, a_file);
 		}
 
@@ -1164,7 +1164,7 @@ namespace RE
 		[[nodiscard]] static auto GetSparseFullNameMap()
 			-> BSTHashMap<const TESForm*, BGSLocalizedString>&
 		{
-			REL::Relocation<BSTHashMap<const TESForm*, BGSLocalizedString>*> sparseFullNameMap{ REL::ID(226372), -0x8 };
+			REL::Relocation<BSTHashMap<const TESForm*, BGSLocalizedString>*> sparseFullNameMap{ REL::ID(2661402), -0x8 };
 			return *sparseFullNameMap;
 		}
 

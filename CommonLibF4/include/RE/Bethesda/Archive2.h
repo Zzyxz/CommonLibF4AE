@@ -168,35 +168,35 @@ namespace RE::BSResource::Archive2
 		ErrorCode DoOpen() override  // 01
 		{
 			using func_t = decltype(&ReaderStream::DoOpen);
-			REL::Relocation<func_t> func{ REL::ID(762048) };
+			REL::Relocation<func_t> func{ REL::ID(2269280) };
 			return func(this);
 		}
 
 		void DoClose() override  // 02
 		{
 			using func_t = decltype(&ReaderStream::DoClose);
-			REL::Relocation<func_t> func{ REL::ID(109149) };
+			REL::Relocation<func_t> func{ REL::ID(2269285) };
 			return func(this);
 		}
 
 		std::uint64_t DoGetKey() const override  // 03
 		{
 			using func_t = decltype(&ReaderStream::DoGetKey);
-			REL::Relocation<func_t> func{ REL::ID(772817) };
+			REL::Relocation<func_t> func{ REL::ID(2269288) };
 			return func(this);
 		}
 
 		void DoClone(BSTSmartPointer<Stream>& a_result) const override  // 05
 		{
 			using func_t = decltype(&ReaderStream::DoClone);
-			REL::Relocation<func_t> func{ REL::ID(855081) };
+			REL::Relocation<func_t> func{ REL::ID(2269279) };
 			return func(this, a_result);
 		}
 
 		ErrorCode DoRead(void* a_buffer, std::uint64_t a_bytes, std::uint64_t& a_read) const override  // 06
 		{
 			using func_t = decltype(&ReaderStream::DoRead);
-			REL::Relocation<func_t> func{ REL::ID(1359347) };
+			REL::Relocation<func_t> func{ REL::ID(2269281) };
 			return func(this, a_buffer, a_bytes, a_read);
 		}
 
@@ -209,14 +209,14 @@ namespace RE::BSResource::Archive2
 		ErrorCode DoSeek(std::int64_t a_offset, SeekMode a_whence, std::uint64_t& a_pos) const override  // 09
 		{
 			using func_t = decltype(&ReaderStream::DoSeek);
-			REL::Relocation<func_t> func{ REL::ID(1000164) };
+			REL::Relocation<func_t> func{ REL::ID(2269282) };
 			return func(this, a_offset, a_whence, a_pos);
 		}
 
 		ErrorCode DoPrefetchAll(std::uint32_t a_priority) const override  // 0E
 		{
 			using func_t = decltype(&ReaderStream::DoPrefetchAll);
-			REL::Relocation<func_t> func{ REL::ID(1518821) };
+			REL::Relocation<func_t> func{ REL::ID(2269284) };
 			return func(this, a_priority);
 		}
 
@@ -229,7 +229,7 @@ namespace RE::BSResource::Archive2
 		ErrorCode DoCreateAsync(BSTSmartPointer<AsyncStream>& a_result) const override  // 10
 		{
 			using func_t = decltype(&ReaderStream::DoCreateAsync);
-			REL::Relocation<func_t> func{ REL::ID(893405) };
+			REL::Relocation<func_t> func{ REL::ID(2269287) };
 			return func(this, a_result);
 		}
 
@@ -272,14 +272,14 @@ namespace RE::BSResource::Archive2
 		ErrorCode DoOpen() override  // 01
 		{
 			using func_t = decltype(&AsyncReaderStream::DoOpen);
-			REL::Relocation<func_t> func{ REL::ID(1401160) };
+			REL::Relocation<func_t> func{ REL::ID(2269387) };
 			return func(this);
 		}
 
 		void DoClose() override  // 02
 		{
 			using func_t = decltype(&AsyncReaderStream::DoClose);
-			REL::Relocation<func_t> func{ REL::ID(883012) };
+			REL::Relocation<func_t> func{ REL::ID(2269380) };
 			return func(this);
 		}
 
@@ -287,7 +287,7 @@ namespace RE::BSResource::Archive2
 			BSTSmartPointer<AsyncStream>& a_result) const override  // 05
 		{
 			using func_t = decltype(&AsyncReaderStream::DoClone);
-			REL::Relocation<func_t> func{ REL::ID(803750) };
+			REL::Relocation<func_t> func{ REL::ID(2269379) };
 			return func(this, a_result);
 		}
 
@@ -297,7 +297,7 @@ namespace RE::BSResource::Archive2
 			std::uint64_t a_offset) const override  // 06
 		{
 			using func_t = decltype(&AsyncReaderStream::DoStartRead);
-			REL::Relocation<func_t> func{ REL::ID(1215072) };
+			REL::Relocation<func_t> func{ REL::ID(2269395) };
 			return func(this, a_buffer, a_bytes, a_offset);
 		}
 
@@ -307,7 +307,7 @@ namespace RE::BSResource::Archive2
 			std::uint64_t a_offset) const override  // 07
 		{
 			using func_t = decltype(&AsyncReaderStream::DoStartPacketAlignedBufferedRead);
-			REL::Relocation<func_t> func{ REL::ID(603387) };
+			REL::Relocation<func_t> func{ REL::ID(2269394) };
 			return func(this, a_buffer, a_bytes, a_offset);
 		}
 
@@ -330,7 +330,7 @@ namespace RE::BSResource::Archive2
 			bool a_block) override  // 0B
 		{
 			using func_t = decltype(&AsyncReaderStream::DoWait);
-			REL::Relocation<func_t> func{ REL::ID(244066) };
+			REL::Relocation<func_t> func{ REL::ID(2269399) };
 			return func(this, a_transferred, a_block);
 		}
 

@@ -55,21 +55,21 @@ namespace RE
 
 		[[nodiscard]] static ControlMap* GetSingleton()
 		{
-			REL::Relocation<ControlMap**> singleton{ REL::ID(325206) };
+			REL::Relocation<ControlMap**> singleton{ REL::ID(4799307) };
 			return *singleton;
 		}
 
 		bool PopInputContext(UserEvents::INPUT_CONTEXT_ID a_context)
 		{
 			using func_t = decltype(&ControlMap::PopInputContext);
-			REL::Relocation<func_t> func{ REL::ID(74587) };
+			REL::Relocation<func_t> func{ REL::ID(2268336) };
 			return func(this, a_context);
 		}
 
 		void PushInputContext(UserEvents::INPUT_CONTEXT_ID a_context)
 		{
 			using func_t = decltype(&ControlMap::PushInputContext);
-			REL::Relocation<func_t> func{ REL::ID(1404410) };
+			REL::Relocation<func_t> func{ REL::ID(2268335) };
 			return func(this, a_context);
 		}
 

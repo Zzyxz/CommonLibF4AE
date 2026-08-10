@@ -54,21 +54,21 @@ namespace RE
 
 		[[nodiscard]] static PipboyManager* GetSingleton()
 		{
-			REL::Relocation<PipboyManager**> singleton{ REL::ID(553234) };
+			REL::Relocation<PipboyManager**> singleton{ REL::ID(4799238) };
 			return *singleton;
 		}
 
 		void RefreshPipboyRenderSurface()
 		{
 			using func_t = decltype(&PipboyManager::RefreshPipboyRenderSurface);
-			REL::Relocation<func_t> func{ REL::ID(81339) };
+			REL::Relocation<func_t> func{ REL::ID(2225478) };
 			return func(this);
 		}
 
 		void UpdateCursorConstraint(bool a_enable)
 		{
 			using func_t = decltype(&PipboyManager::UpdateCursorConstraint);
-			REL::Relocation<func_t> func{ REL::ID(900802) };
+			REL::Relocation<func_t> func{ REL::ID(2225488) };
 			return func(this, a_enable);
 		}
 

@@ -92,7 +92,7 @@ namespace RE
 			bool FindAndSetSelectedNode(std::uint16_t a_row, std::uint32_t a_crc, std::uint16_t& a_outRow)
 			{
 				using func_t = decltype(&WorkshopMenuNode::FindAndSetSelectedNode);
-				REL::Relocation<func_t> func{ REL::ID(1309368) };
+				REL::Relocation<func_t> func{ REL::ID(2195022) };
 				return func(this, a_row, a_crc, a_outRow);
 			}
 
@@ -115,21 +115,21 @@ namespace RE
 		[[nodiscard]] inline WorkshopMenuNode* GetSelectedWorkshopMenuNode(std::uint32_t a_row, std::uint32_t& a_column)
 		{
 			using func_t = decltype(&Workshop::GetSelectedWorkshopMenuNode);
-			REL::Relocation<func_t> func{ REL::ID(763948) };
+			REL::Relocation<func_t> func{ REL::ID(2195024) };
 			return func(a_row, a_column);
 		}
 
 		inline void ScrapReference(const ContextData& a_context, BSPointerHandleSmartPointer<BSPointerHandleManagerInterface<TESObjectREFR, HandleManager>>& a_scrapRef, BSTArray<BSTTuple<TESBoundObject*, std::uint32_t>>* a_rewards)
 		{
 			using func_t = decltype(&Workshop::ScrapReference);
-			REL::Relocation<func_t> func{ REL::ID(636327) };
+			REL::Relocation<func_t> func{ REL::ID(2195125) };
 			return func(a_context, a_scrapRef, a_rewards);
 		}
 
 		[[nodiscard]] inline bool WorkshopCanShowRecipe(BGSConstructibleObject* a_recipe, BGSKeyword* a_filter)
 		{
 			using func_t = decltype(&Workshop::WorkshopCanShowRecipe);
-			REL::Relocation<func_t> func{ REL::ID(239190) };
+			REL::Relocation<func_t> func{ REL::ID(2194978) };
 			return func(a_recipe, a_filter);
 		}
 	}

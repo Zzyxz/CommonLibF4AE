@@ -52,21 +52,21 @@ namespace RE
 
 		[[nodiscard]] static BGSCreatedObjectManager* GetSingleton()
 		{
-			REL::Relocation<BGSCreatedObjectManager**> singleton{ REL::ID(1000678) };
+			REL::Relocation<BGSCreatedObjectManager**> singleton{ REL::ID(4796296) };
 			return *singleton;
 		}
 
 		void DecrementRef(AlchemyItem* a_alchItem)
 		{
 			using func_t = decltype(&BGSCreatedObjectManager::DecrementRef);
-			REL::Relocation<func_t> func{ REL::ID(230928) };
+			REL::Relocation<func_t> func{ REL::ID(2228455) };
 			return func(this, a_alchItem);
 		}
 
 		void IncrementRef(AlchemyItem* a_alchItem)
 		{
 			using func_t = decltype(&BGSCreatedObjectManager::IncrementRef);
-			REL::Relocation<func_t> func{ REL::ID(1042515) };
+			REL::Relocation<func_t> func{ REL::ID(2228454) };
 			return func(this, a_alchItem);
 		}
 

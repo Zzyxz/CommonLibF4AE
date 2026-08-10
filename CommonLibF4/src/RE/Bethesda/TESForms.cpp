@@ -12,7 +12,7 @@ namespace RE
 		if (!water) {
 			water = IsExterior() && worldSpace ? worldSpace->GetWaterType() : nullptr;
 			if (!water) {
-				REL::Relocation<TESWaterForm**> defaultWater{ REL::ID(289864) };
+				REL::Relocation<TESWaterForm**> defaultWater{ REL::ID(4799138) };
 				water = *defaultWater;
 			}
 		}

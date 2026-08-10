@@ -529,21 +529,21 @@ namespace RE
 			[[nodiscard]] std::uint32_t DecRef() const
 			{
 				using func_t = decltype(&Object::DecRef);
-				REL::Relocation<func_t> func{ REL::ID(541793) };
+				REL::Relocation<func_t> func{ REL::ID(2314437) };
 				return func(this);
 			}
 
 			[[nodiscard]] std::size_t GetHandle() const
 			{
 				using func_t = decltype(&Object::GetHandle);
-				REL::Relocation<func_t> func{ REL::ID(1452752) };
+				REL::Relocation<func_t> func{ REL::ID(2314431) };
 				return func(this);
 			}
 
 			void IncRef() const
 			{
 				using func_t = decltype(&Object::IncRef);
-				REL::Relocation<func_t> func{ REL::ID(461710) };
+				REL::Relocation<func_t> func{ REL::ID(2314436) };
 				return func(this);
 			}
 
@@ -625,14 +625,14 @@ namespace RE
 			[[nodiscard]] std::uint32_t GetPageForFrame(const StackFrame* a_frame) const
 			{
 				using func_t = decltype(&Stack::GetPageForFrame);
-				REL::Relocation<func_t> func{ REL::ID(1429302) };
+				REL::Relocation<func_t> func{ REL::ID(2314680) };
 				return func(this, a_frame);
 			}
 
 			[[nodiscard]] Variable& GetStackFrameVariable(const StackFrame* a_frame, std::uint32_t a_index, std::uint32_t a_pageHint)
 			{
 				using func_t = decltype(&Stack::GetStackFrameVariable);
-				REL::Relocation<func_t> func{ REL::ID(897539) };
+				REL::Relocation<func_t> func{ REL::ID(2314681) };
 				return func(this, a_frame, a_index, a_pageHint);
 			}
 
@@ -1095,7 +1095,7 @@ namespace RE
 			void BindObject(const BSTSmartPointer<Object>& a_obj, std::size_t a_objHandle)
 			{
 				using func_t = decltype(&ObjectBindPolicy::BindObject);
-				REL::Relocation<func_t> func{ REL::ID(709728) };
+				REL::Relocation<func_t> func{ REL::ID(2314370) };
 				return func(this, a_obj, a_objHandle);
 			}
 
@@ -1273,7 +1273,7 @@ namespace RE
 				CallResult Call(const BSTSmartPointer<Stack>& a_stack, ErrorLogger& a_errorLogger, Internal::VirtualMachine& a_vm, bool a_inScriptTasklet) const override  // 0F
 				{
 					using func_t = decltype(&NativeFunctionBase::Call);
-					REL::Relocation<func_t> func{ REL::ID(571037) };
+					REL::Relocation<func_t> func{ REL::ID(2314780) };
 					return func(this, a_stack, a_errorLogger, a_vm, a_inScriptTasklet);
 				}
 

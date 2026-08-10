@@ -378,7 +378,7 @@ namespace RE
 		void AddMod(const BGSMod::Attachment::Mod& a_newMod, std::uint8_t a_attachIndex, std::uint8_t a_rank, bool a_removeInvalidMods)
 		{
 			using func_t = decltype(&BGSObjectInstanceExtra::AddMod);
-			REL::Relocation<func_t> func{ REL::ID(1191757) };
+			REL::Relocation<func_t> func{ REL::ID(2189025) };
 			return func(this, a_newMod, a_attachIndex, a_rank, a_removeInvalidMods);
 		}
 
@@ -389,14 +389,14 @@ namespace RE
 		std::uint32_t RemoveInvalidMods(const BGSAttachParentArray* a_baseObjectParents)
 		{
 			using func_t = decltype(&BGSObjectInstanceExtra::RemoveInvalidMods);
-			REL::Relocation<func_t> func{ REL::ID(1548060) };
+			REL::Relocation<func_t> func{ REL::ID(2189028) };
 			return func(this, a_baseObjectParents);
 		}
 
 		std::uint32_t RemoveMod(const BGSMod::Attachment::Mod* a_mod, std::uint8_t a_attachIndex)
 		{
 			using func_t = decltype(&BGSObjectInstanceExtra::RemoveMod);
-			REL::Relocation<func_t> func{ REL::ID(1136607) };
+			REL::Relocation<func_t> func{ REL::ID(2189027) };
 			return func(this, a_mod, a_attachIndex);
 		}
 
@@ -408,7 +408,7 @@ namespace RE
 		BGSObjectInstanceExtra* ctor(const BGSMod::Template::Item* a_item, TESForm* a_parentForm, const INSTANCE_FILTER* a_filter)
 		{
 			using func_t = decltype(&BGSObjectInstanceExtra::ctor);
-			REL::Relocation<func_t> func{ REL::ID(1222521) };
+			REL::Relocation<func_t> func{ REL::ID(2189015) };
 			return func(this, a_item, a_parentForm, a_filter);
 		}
 	};
@@ -487,7 +487,7 @@ namespace RE
 		[[nodiscard]] const BSFixedStringCS& GetDisplayName(TESBoundObject* a_baseObject)
 		{
 			using func_t = decltype(&ExtraTextDisplayData::GetDisplayName);
-			REL::Relocation<func_t> func{ REL::ID(1523343) };
+			REL::Relocation<func_t> func{ REL::ID(2191318) };
 			return func(this, a_baseObject);
 		}
 
@@ -681,7 +681,7 @@ namespace RE
 		stl::observer<TBO_InstanceData*> CreateInstanceData(TESBoundObject* a_object, bool a_generateName)
 		{
 			using func_t = decltype(&ExtraDataList::CreateInstanceData);
-			REL::Relocation<func_t> func{ REL::ID(1280130) };
+			REL::Relocation<func_t> func{ REL::ID(2190185) };
 			return func(this, a_object, a_generateName);
 		}
 
@@ -724,7 +724,7 @@ namespace RE
 		void SetDisplayNameFromInstanceData(BGSObjectInstanceExtra* a_instExtra, TESBoundObject* a_object, const BSTSmartPointer<TBO_InstanceData>& a_data)
 		{
 			using func_t = decltype(&ExtraDataList::SetDisplayNameFromInstanceData);
-			REL::Relocation<func_t> func{ REL::ID(457340) };
+			REL::Relocation<func_t> func{ REL::ID(2190179) };
 			return func(this, a_instExtra, a_object, a_data);
 		}
 
