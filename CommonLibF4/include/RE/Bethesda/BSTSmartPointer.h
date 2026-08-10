@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RE/Bethesda/CRC.h"
+
 namespace RE
 {
 	struct BSIntrusiveRefCounted

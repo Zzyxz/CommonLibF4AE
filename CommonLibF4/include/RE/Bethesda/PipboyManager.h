@@ -17,45 +17,69 @@ namespace RE
 	class BGSTerminal;
 	class BSTriShape;
 	class TESBoundObject;
+	class TESObjectREFR;
+
+	struct BSAnimationGraphEvent;
 
 	class IsPipboyActiveEvent :
-		public BSTValueEvent<bool>  // 0
+		public BSTValueEvent<bool>  // 00
 	{
 	public:
 	};
-	static_assert(sizeof(IsPipboyActiveEvent) == 0x2);
+	static_assert(sizeof(IsPipboyActiveEvent) == 0x02);
 
 	class PipboyRadioController
 	{
 	public:
 		// members
-		float chaseStation;  // 0
+		float chaseStation;  // 00
 	};
-	static_assert(sizeof(PipboyRadioController) == 0x4);
-
-	struct BSAnimationGraphEvent;
+	static_assert(sizeof(PipboyRadioController) == 0x04);
 
 	class __declspec(novtable) PipboyManager :
-		public BSTSingletonSDM<PipboyManager>,       // 018
-		public BSTEventSink<BSAnimationGraphEvent>,  // 000
-		public BSInputEventUser                      // 008
+		public BSTEventSink<BSAnimationGraphEvent>,  // 00
+		public BSInputEventUser,                     // 08
+		public BSTSingletonSDM<PipboyManager>        // 18
 	{
 	public:
 		static constexpr auto RTTI{ RTTI::PipboyManager };
 		static constexpr auto VTABLE{ VTABLE::PipboyManager };
 
-		enum class LOWER_REASON : std::int32_t
+		enum class LOWER_REASON
 		{
-			kNone,
-			kBook,
-			kPerkGrid,
-			kInspect
+			kNone = 0,
+			kBook = 1,
+			kPerkGrid = 2,
+			kInspect = 3
 		};
+
+		virtual ~PipboyManager();  // 00
+
+		// override
+		virtual BSEventNotifyControl ProcessEvent(const BSAnimationGraphEvent& a_event, BSTEventSource<BSAnimationGraphEvent>* a_source) override;  // 01
+		virtual bool ShouldHandleEvent(const InputEvent*) override;                                                                                 // 02
+		virtual void HandleEvent(const ButtonEvent*) override;                                                                                    // 09
+		virtual void HandleEvent(const MouseMoveEvent*) override;                                                                              // 07
+		virtual void HandleEvent(const ThumbstickEvent*) override;                                                                            // 05
 
 		[[nodiscard]] static PipboyManager* GetSingleton()
 		{
 			REL::Relocation<PipboyManager**> singleton{ REL::ID(4799238) };
 			return *singleton;
+		}
+
+		void LowerPipboy(LOWER_REASON a_reason)
+		{
+			using func_t = decltype(&PipboyManager::LowerPipboy);
+			REL::Relocation<func_t> func{ REL::ID(2225454) };
+			return func(this, a_reason);
+		}
+
+		void RaisePipboy()
+		{
+			using func_t = decltype(&PipboyManager::RaisePipboy);
+			REL::Relocation<func_t> func{ REL::ID(2225455) };
+			return func(this);
 		}
 
 		void RefreshPipboyRenderSurface()
@@ -73,33 +97,33 @@ namespace RE
 		}
 
 		// members
-		BSSoundHandle pipboyHumSound;                                 //
-		BSTPoint2<float> inputVector;                                 //
-		BSTPoint2<float> newInput;                                    //
-		NiPointer<BSTriShape> debugModeGeom;                          //
-		Inventory3DManager modelManager;                              //
-		BGSNote* holotapeToLoad;                                      //
-		BGSTerminal* terminalToLoad;                                  //
-		BSFixedString menuToOpen;                                     //
-		BSFixedString openAnimEvent;                                  //
-		BSFixedString closeAnimEvent;                                 //
-		stl::enumeration<LOWER_REASON, std::int32_t> loweringReason;  //
-		PipboyRadioController radioController;                        //
-		TESBoundObject* itemAnimOnClose;                              //
-		ObjectRefHandle fastTravelLocation;                           //
-		InventoryInterface::Handle inspectRequestItem;                //
-		std::uint32_t inspectRequestStack;                            //
-		bool pipboyExamineMode;                                       //
-		bool pipboyExamineDirtyFlag;                                  //
-		bool pipboyOpening;                                           //
-		bool pipboyClosing;                                           //
-		BSTValueEventSource<IsPipboyActiveEvent> pipboyActive;        //
-		bool ignoreOpeningFlag;                                       //
-		bool autoSaveOnClose;                                         //
-		bool pipboyMenuCloseQueued;                                   //
-		bool pipboyRaising;                                           //
-		bool wasMotionBlurActive;                                     //
-		bool wasPipboyLightActive;                                    //
+		BSSoundHandle pipboyHumSound;                                 // 01C
+		BSTPoint2<float> inputVector;                                 // 024
+		BSTPoint2<float> newInput;                                    // 02C
+		NiPointer<BSTriShape> debugModeGeom;                          // 038
+		Inventory3DManager modelManager;                              // 040
+		BGSNote* holotapeToLoad;                                      // 180
+		BGSTerminal* terminalToLoad;                                  // 188
+		BSFixedString menuToOpen;                                     // 190
+		BSFixedString openAnimEvent;                                  // 198
+		BSFixedString closeAnimEvent;                                 // 1A0
+		stl::enumeration<LOWER_REASON, std::int32_t> loweringReason;  // 1A8
+		PipboyRadioController radioController;                        // 1AC
+		TESBoundObject* itemAnimOnClose;                              // 1B0
+		ObjectRefHandle fastTravelLocation;                           // 1B8
+		InventoryInterface::Handle inspectRequestItem;                // 1BC
+		std::uint32_t inspectRequestStack;                            // 1C0
+		bool pipboyExamineMode;                                       // 1C4
+		bool pipboyExamineDirtyFlag;                                  // 1C5
+		bool pipboyOpening;                                           // 1C6
+		bool pipboyClosing;                                           // 1C7
+		BSTValueEventSource<IsPipboyActiveEvent> pipboyActive;        // 1C8
+		bool ignoreOpeningFlag;                                       // 1E0
+		bool autoSaveOnClose;                                         // 1E1
+		bool pipboyMenuCloseQueued;                                   // 1E2
+		bool pipboyRaising;                                           // 1E3
+		bool wasMotionBlurActive;                                     // 1E4
+		bool wasPipboyLightActive;                                    // 1E5
 	};
 	static_assert(sizeof(PipboyManager) == 0x1F0);
 }

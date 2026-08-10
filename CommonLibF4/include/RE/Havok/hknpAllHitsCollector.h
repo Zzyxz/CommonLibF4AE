@@ -13,12 +13,42 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::hknpAllHitsCollector };
 		static constexpr auto VTABLE{ VTABLE::hknpAllHitsCollector };
 
+		hknpAllHitsCollector()
+		{
+			stl::emplace_vtable(this);
+			hints = 0;
+			hits._data = reinterpret_cast<hknpCollisionResult*>(reinterpret_cast<std::uintptr_t>(this) + 0x30);
+			hits._size = 0;
+			hits._capacityAndFlags = static_cast<std::int32_t>(0x8000000A);
+			Reset();
+		}
+
 		// override (hknpCollisionQueryCollector)
-		void Reset() override;                                // 01
+		void Reset() override                                // 01
+		{
+			using func_t = void(hknpAllHitsCollector*);
+			static REL::Relocation<func_t> func{ REL::ID(2189457) };
+			return func(this);
+		}
 		void AddHit(const hknpCollisionResult&) override;     // 02
-		bool HasHit() const override;                         // 03
-		std::int32_t GetNumHits() const override;             // 04
-		const hknpCollisionResult* GetHits() const override;  // 05
+		bool HasHit() const override                          // 03
+		{
+			using func_t = bool(const hknpAllHitsCollector*);
+			static REL::Relocation<func_t> func{ REL::ID(2189455) };
+			return func(this);
+		}
+		std::int32_t GetNumHits() const override              // 04
+		{
+			using func_t = std::int32_t(const hknpAllHitsCollector*);
+			static REL::Relocation<func_t> func{ REL::ID(2189453) };
+			return func(this);
+		}
+		const hknpCollisionResult* GetHits() const override   // 05
+		{
+			using func_t = const hknpCollisionResult*(const hknpAllHitsCollector*);
+			static REL::Relocation<func_t> func{ REL::ID(2714317) };
+			return func(this);
+		}
 
 		// members
 		hkInplaceArray<hknpCollisionResult, 10> hits;  // 020

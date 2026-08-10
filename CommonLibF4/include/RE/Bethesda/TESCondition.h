@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RE/Bethesda/BSPointerHandle.h"
+#include "RE/Bethesda/SCRIPT_OUTPUT.h"
 
 namespace RE
 {
@@ -70,6 +71,20 @@ namespace RE
 	class TESConditionItem
 	{
 	public:
+		[[nodiscard]] float GetComparisonValue()
+		{
+			using func_t = decltype(&TESConditionItem::GetComparisonValue);
+			REL::Relocation<func_t> func{ REL::ID(2212007) };
+			return func(this);
+		}
+
+		[[nodiscard]] bool IsTrue(TESObjectREFR* a_actionRef, TESObjectREFR* a_targetRef)
+		{
+			using func_t = decltype(&TESConditionItem::IsTrue);
+			REL::Relocation<func_t> func{ REL::ID(2212008) };
+			return func(this, a_actionRef, a_targetRef);
+		}
+
 		// members
 		TESConditionItem* next;    // 00
 		CONDITION_ITEM_DATA data;  // 08

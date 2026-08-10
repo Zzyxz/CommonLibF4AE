@@ -5,6 +5,7 @@
 #include "RE/Bethesda/BSTArray.h"
 #include "RE/Bethesda/BSTEvent.h"
 #include "RE/Bethesda/CELLJobs.h"
+#include "RE/Bethesda/CollisionLayers.h"
 #include "RE/Bethesda/TESObjectREFRs.h"
 #include "RE/NetImmerse/NiPoint3.h"
 #include "RE/NetImmerse/NiSmartPointer.h"
@@ -119,6 +120,22 @@ namespace RE
 		virtual void Handle3DLoaded() { return; }                                                                        // E8
 		virtual bool ShouldUseDesiredTarget() { return false; }                                                          // E9
 
+		void SetPosition(const NiPoint3& a_point)
+		{
+			using func_t = decltype(&Projectile::SetPosition);
+			REL::Relocation<func_t> func{ REL::ID(2237025) };
+			func(this, a_point);
+		}
+
+		void MoveHavok(bool a_activate)
+		{
+			using func_t = decltype(&Projectile::MoveHavok);
+			REL::Relocation<func_t> func{ REL::ID(2718807) };
+			func(this, a_activate);
+		}
+
+
+
 		// members
 		BSTArray<ImpactData> impacts;                                              // 110
 		NiTransform followOffset;                                                  // 130
@@ -160,7 +177,10 @@ namespace RE
 		std::uint64_t flags;                                                       // 260
 		bool artRequested;                                                         // 268
 		bool animationsLoaded;                                                     // 269
-	};
+
+
+
+};
 	static_assert(sizeof(Projectile) == 0x270);
 
 	class __declspec(novtable) MissileProjectile :

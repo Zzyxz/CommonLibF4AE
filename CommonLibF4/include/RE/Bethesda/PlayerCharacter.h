@@ -50,7 +50,14 @@ namespace RE
 	class UserEventEnabledEvent;
 
 	struct BGSActorCellEvent;
-	struct BGSActorDeathEvent;
+	struct BGSActorDeathEvent
+	{
+		uint64_t flag;
+		float damageTaken;
+		uint32_t pad08;
+		float lastHealth;
+		uint32_t pad10;
+	};
 	struct ItemChange;
 	struct PickRefUpdateEvent;
 	struct PositionPlayerEvent;
@@ -209,6 +216,41 @@ namespace RE
 		};
 		static_assert(sizeof(PlayerActionObject) == 0xC);
 
+		struct ScopedInventoryChangeMessageContext
+		{
+		public:
+			ScopedInventoryChangeMessageContext(bool a_suppressMessages, bool a_suppressAudio) :
+				suppressMessages(a_suppressMessages), suppressAudio(a_suppressAudio)
+			{
+				ctor(suppressMessages, suppressAudio);
+			}
+
+			~ScopedInventoryChangeMessageContext()
+			{
+				dtor();
+			}
+
+			// members
+			const bool suppressMessages{ false };  // 00
+			const bool suppressAudio{ false };     // 01
+
+		private:
+			void ctor(bool a_suppressMessages, bool a_suppressAudio)
+			{
+				using func_t = decltype(&ScopedInventoryChangeMessageContext::ctor);
+				REL::Relocation<func_t> func{ REL::ID(2233292) };
+				return func(this, a_suppressMessages, a_suppressAudio);
+			}
+
+			void dtor()
+			{
+				using func_t = decltype(&ScopedInventoryChangeMessageContext::dtor);
+				REL::Relocation<func_t> func{ REL::ID(2233293) };
+				return func(this);
+			}
+		};
+		static_assert(sizeof(ScopedInventoryChangeMessageContext) == 0x2);
+
 		// add
 		virtual void InitiateSpectator(Actor*) { return; }                               // 133
 		virtual std::uint32_t GetViolentCrimeGoldValue(const TESFaction* a_faction);     // 134
@@ -219,6 +261,92 @@ namespace RE
 		{
 			REL::Relocation<NiPointer<PlayerCharacter>*> singleton{ REL::ID(2698073) };
 			return singleton->get();
+		}
+
+		void RemoveLastUsedPowerArmor()
+		{
+			using func_t = decltype(&PlayerCharacter::RemoveLastUsedPowerArmor);
+			REL::Relocation<func_t> func{ REL::ID(2233024) };
+			return func(this);
+		}
+
+		void SelectPerk(std::uint32_t a_formID, std::int8_t a_rank = 0)
+		{
+			using func_t = decltype(&PlayerCharacter::SelectPerk);
+			REL::Relocation<func_t> func{ REL::ID(2232926) };
+			return func(this, a_formID, a_rank);
+		}
+
+		void SetEscaping(bool a_flag, bool a_escaped)
+		{
+			using func_t = decltype(&PlayerCharacter::SetEscaping);
+			REL::Relocation<func_t> func{ REL::ID(2233142) };
+			return func(this, a_flag, a_escaped);
+		}
+
+		bool IsGodMode()
+		{
+			using func_t = decltype(&PlayerCharacter::IsGodMode);
+			REL::Relocation<func_t> func{ REL::ID(2232986) };
+			return func(this);
+		}
+
+		bool IsHolotapePlaying(BGSNote* a_holotape)
+		{
+			using func_t = decltype(&PlayerCharacter::IsHolotapePlaying);
+			REL::Relocation<func_t> func{ REL::ID(2233206) };
+			return func(this, a_holotape);
+		}
+
+		bool IsImmortal()
+		{
+			using func_t = decltype(&PlayerCharacter::IsImmortal);
+			REL::Relocation<func_t> func{ REL::ID(2232988) };
+			return func(this);
+		}
+
+		bool IsPipboyLightOn()
+		{
+			using func_t = decltype(&PlayerCharacter::IsPipboyLightOn);
+			REL::Relocation<func_t> func{ REL::ID(2233202) };
+			return func(this);
+		}
+
+		bool IsSneaking()
+		{
+			using func_t = decltype(&PlayerCharacter::IsSneaking);
+			REL::Relocation<func_t> func{ REL::ID(2207655) };
+			return func(this);
+		}
+
+
+
+		void PauseHolotape(BGSNote* a_holotape)
+		{
+			using func_t = decltype(&PlayerCharacter::PauseHolotape);
+			REL::Relocation<func_t> func{ REL::ID(2233208) };
+			return func(this, a_holotape);
+		}
+
+		void PlayHolotape(BGSNote* a_holotape)
+		{
+			using func_t = decltype(&PlayerCharacter::PlayHolotape);
+			REL::Relocation<func_t> func{ REL::ID(2233207) };
+			return func(this, a_holotape);
+		}
+
+		void SetVATSCriticalCount(uint32_t a_critCount)
+		{
+			using func_t = decltype(&PlayerCharacter::SetVATSCriticalCount);
+			REL::Relocation<func_t> func{ REL::ID(2233219) };
+			return func(this, a_critCount);
+		}
+
+		void TogglePipBoyLight()
+		{
+			using func_t = decltype(&PlayerCharacter::TogglePipBoyLight);
+			REL::Relocation<func_t> func{ REL::ID(2233201) };
+			return func(this);
 		}
 
 		// members

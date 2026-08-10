@@ -191,6 +191,34 @@ namespace RE
 			return BSTSmartPointer{ static_cast<T*>(cameraStates[T::STATE].get()) };
 		}
 
+		void SetState(TESCameraState* a_newstate) const
+		{
+			using func_t = decltype(&PlayerCamera::SetState);
+			REL::Relocation<func_t> func{ REL::ID(2214742) };
+			return func(this, a_newstate);
+		}
+
+		void GetCameraPosition(NiPoint3& out, bool world) const
+		{
+			using func_t = void(__fastcall*)(const PlayerCamera*, NiPoint3&, bool);
+			static REL::Relocation<func_t> func{ REL::ID(2248334) };
+			return func(this, out, world);
+		}
+
+		void SetCameraOverride(bool enable)
+		{
+			using func_t = void(__fastcall*)(PlayerCamera*, bool);
+			static REL::Relocation<func_t> func{ REL::ID(2248407) };
+			return func(this, enable);
+		}
+
+		void SetSpecialCameraPosition(const NiPoint3& pos)
+		{
+			using func_t = void(__fastcall*)(PlayerCamera*, const NiPoint3&);
+			static REL::Relocation<func_t> func{ REL::ID(2248363) };
+			return func(this, pos);
+		}
+
 		// members
 		ActorHandle cameraTarget;                                                               // 064
 		BSTSmallArray<BSTSmartPointer<TESCameraState>, CameraStates::kTotal> tempReturnStates;  // 068

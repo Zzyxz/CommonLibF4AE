@@ -12,7 +12,13 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::NiFile };
 		static constexpr auto VTABLE{ VTABLE::NiFile };
 
-		enum class OpenMode;
+		enum class OpenMode : std::int32_t
+		{
+			kReadOnly,
+			kWriteOnly,
+			kAppendOnly,
+			kReadWrite,
+		};
 
 		// members
 		std::size_t bufferAllocSize;                    // 10

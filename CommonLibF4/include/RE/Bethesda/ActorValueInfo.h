@@ -29,6 +29,32 @@ namespace RE
 			kResource
 		};
 
+		enum class Flags : std::int32_t
+		{
+			kDepreciated = 1 << 1,
+			kEnumeration = 1 << 2,
+			kNoScriptModAV = 1 << 3,
+			kCache = 1 << 4,
+			kCachePermenant = 1 << 5,
+			kAlwaysClamp = 1 << 6,
+			kImplicitBase0 = 1 << 10,
+			kImplicitBase1 = 1 << 11,
+			kImplicitBase100 = 1 << 12,
+			kUserDefined = 1 << 13,
+			kDerived = 1 << 15,
+			kBaseUseAutoCalc = 1 << 16,
+			kMin1 = 1 << 20,
+			kMax10 = 1 << 21,
+			kMax100 = 1 << 22,
+			kScaleBy100 = 1 << 23,
+			kPercentage = 1 << 24,
+			kDamageMinZero = 1 << 25,
+			kDamageIsPositive = 1 << 26,
+			kGodModeNoDamage = 1 << 27,
+			kDoesNotRecover = 1 << 28,
+			kHardcoded = 1 << 31,
+		};
+
 		[[nodiscard]] static ActorValue* GetSingleton()
 		{
 			using func_t = decltype(&ActorValue::GetSingleton);
@@ -196,7 +222,7 @@ namespace RE
 		const char* enumNames[10];                                  // 110
 		BGSLocalizedString abbreviation;                            // 160
 		std::int32_t oldActorValue;                                 // 168
-		std::uint32_t flags;                                        // 16C
+		stl::enumeration<ActorValue::Flags, std::int32_t> flags;    // 16C
 		stl::enumeration<ActorValue::AVType, std::int32_t> avType;  // 170
 		std::uint32_t numDependentActorValues;                      // 174
 		std::uint32_t enumCount;                                    // 178

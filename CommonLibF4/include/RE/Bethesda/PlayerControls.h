@@ -34,6 +34,41 @@ namespace RE
 	struct TogglePOVHandler;
 	struct ToggleRunHandler;
 
+	class __declspec(novtable) ActionInput
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::ActionInput };
+		static constexpr auto VTABLE{ VTABLE::ActionInput };
+
+		enum class ACTIONPRIORITY
+		{
+			kImperative,
+			kQueue,
+			kTry
+		};
+
+		struct Data
+		{
+		public:
+			union
+			{
+				float f;
+				std::int32_t i;
+				std::uint32_t ui;
+			};  //00
+		};
+
+		virtual ~ActionInput();  // 00
+
+		// members
+		NiPointer<TESObjectREFR> ref;                              // 08
+		NiPointer<TESObjectREFR> targetRef;                        // 10
+		BGSAction* action;                                         // 18
+		stl::enumeration<ACTIONPRIORITY, std::uint32_t> priority;  // 20
+		Data ActionData;                                           // 24
+	};
+	static_assert(sizeof(ActionInput) == 0x28);
+
 	struct PlayerControlsData
 	{
 	public:
@@ -122,6 +157,13 @@ namespace RE
 		{
 			REL::Relocation<PlayerControls**> singleton{ REL::ID(4799306) };
 			return *singleton;
+		}
+
+		bool DoAction(DEFAULT_OBJECT a_action, ActionInput::ACTIONPRIORITY a_priority)
+		{
+			using func_t = decltype(&PlayerControls::DoAction);
+			REL::Relocation<func_t> func{ REL::ID(2234796) };
+			return func(this, a_action, a_priority);
 		}
 
 		void RegisterHandler(PlayerInputHandler* a_handler) { DoRegisterHandler(a_handler, false); }

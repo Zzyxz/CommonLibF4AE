@@ -24,6 +24,31 @@ namespace RE
 			return reinterpret_cast<const_pointer>(std::addressof(x))[a_pos];
 		}
 
+		[[nodiscard]] bool operator==(const NiPoint3& a_rhs) const noexcept;
+		[[nodiscard]] bool operator!=(const NiPoint3& a_rhs) const noexcept;
+		[[nodiscard]] NiPoint3 operator+(const NiPoint3& a_rhs) const noexcept;
+		[[nodiscard]] NiPoint3 operator-(const NiPoint3& a_rhs) const noexcept;
+		[[nodiscard]] float operator*(const NiPoint3& a_rhs) const noexcept;
+		[[nodiscard]] NiPoint3 operator*(float a_scalar) const noexcept;
+		[[nodiscard]] NiPoint3 operator/(float a_scalar) const noexcept;
+		[[nodiscard]] NiPoint3 operator-() const noexcept;
+		NiPoint3& operator+=(const NiPoint3& a_rhs) noexcept;
+		NiPoint3& operator-=(const NiPoint3& a_rhs) noexcept;
+		NiPoint3& operator*=(const NiPoint3& a_rhs) noexcept;
+		NiPoint3& operator/=(const NiPoint3& a_rhs) noexcept;
+		NiPoint3& operator*=(float a_scalar) noexcept;
+		NiPoint3& operator/=(float a_scalar) noexcept;
+
+		[[nodiscard]] NiPoint3 Cross(const NiPoint3& a_point) const noexcept;
+		[[nodiscard]] float Dot(const NiPoint3& a_point) const noexcept;
+		[[nodiscard]] float GetDistance(const NiPoint3& a_point) const noexcept;
+		[[nodiscard]] float GetSquaredDistance(const NiPoint3& a_point) const noexcept;
+		[[nodiscard]] float GetZAngleFromVector();
+		[[nodiscard]] float Length() const noexcept;
+		[[nodiscard]] float SqrLength() const noexcept;
+		[[nodiscard]] NiPoint3 UnitCross(const NiPoint3& a_point) const noexcept;
+		float Unitize() noexcept;
+
 		// members
 		value_type x{ 0.0F };  // 0
 		value_type y{ 0.0F };  // 4

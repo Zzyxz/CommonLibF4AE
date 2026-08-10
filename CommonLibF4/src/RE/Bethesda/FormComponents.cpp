@@ -13,6 +13,49 @@ namespace RE
 		{
 			return BGSKeyword::GetTypedKeywordByIndex(a_type, a_index);
 		}
+		uint16_t BGSKeywordGetIndexForTypedKeyword(BGSKeyword* a_keyword, KeywordType a_type)
+		{
+			return BGSKeyword::GetIndexForTypedKeyword(a_keyword, a_type);
+		}
+	}
+
+	bool BGSKeywordForm::ContainsKeywordString(std::string_view a_editorID) const
+	{
+		if (keywords) {
+			for (std::uint32_t idx = 0; idx < numKeywords; ++idx) {
+				if (keywords[idx] && keywords[idx]->formEditorID.contains(a_editorID)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool BGSKeywordForm::HasKeywordID(std::uint32_t a_formID) const
+	{
+		if (keywords) {
+			for (std::uint32_t idx = 0; idx < numKeywords; ++idx) {
+				if (keywords[idx] && keywords[idx]->formID == a_formID) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool BGSKeywordForm::HasKeywordString(std::string_view a_editorID) const
+	{
+		if (keywords) {
+			for (std::uint32_t idx = 0; idx < numKeywords; ++idx) {
+				if (keywords[idx] && keywords[idx]->formEditorID == a_editorID) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	std::string_view TESFullName::GetFullName(const TESForm& a_form, bool a_strict)
@@ -42,6 +85,8 @@ namespace RE
 			return it != map.end() ? it->second : ""sv;
 		}
 	}
+
+
 
 	void TESFullName::SetFullName(TESForm& a_form, std::string_view a_fullName)
 	{

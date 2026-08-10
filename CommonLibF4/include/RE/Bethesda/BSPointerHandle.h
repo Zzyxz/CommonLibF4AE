@@ -158,6 +158,13 @@ namespace RE
 	class BSPointerHandleManagerInterface
 	{
 	public:
+		static BSPointerHandle<T> CreateHandle(T* a_ptr)
+		{
+			using func_t = decltype(&BSPointerHandleManagerInterface<T, Manager>::CreateHandle);
+			REL::Relocation<func_t> func{ REL::ID(2188375) };
+			return func(a_ptr);
+		}
+
 		static BSPointerHandle<T> GetHandle(T* a_ptr)
 		{
 			using func_t = decltype(&BSPointerHandleManagerInterface<T, Manager>::GetHandle);

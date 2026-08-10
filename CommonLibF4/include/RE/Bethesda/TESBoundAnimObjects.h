@@ -230,7 +230,19 @@ namespace RE
 	struct WorkbenchData
 	{
 	public:
-		enum class Type;
+		enum class Type
+		{
+			kNone,
+			kCreateObject,
+			kWeapons,
+			kEnchanting,
+			kEnchantingExperiment,
+			kAlchemy,
+			kAlchemyExperiment,
+			kArmor,
+			kPowerArmor,
+			kRobotMod
+		};
 
 		// members
 		stl::enumeration<Type, std::int8_t> type;  // 0
@@ -264,6 +276,13 @@ namespace RE
 			std::uint32_t flags;       // 4
 		};
 		static_assert(sizeof(EntryPointData) == 0x8);
+
+		[[nodiscard]] TESContainer* GetContainer()
+		{
+			using func_t = decltype(&TESFurniture::GetContainer);
+			REL::Relocation<func_t> func{ REL::ID(2198043) };
+			return func(this);
+		}
 
 		// members
 		BSTArray<EntryPointData> entryPointDataArray;  // 148
@@ -346,10 +365,36 @@ namespace RE
 		};
 		static_assert(sizeof(HeadRelatedData) == 0x18);
 
+		bool AddPerk(BGSPerk* a_perk, std::int8_t a_rank)
+		{
+			if (!GetPerkIndex(a_perk)) {
+				std::vector<PerkRankData> storage{ &perks[0], &perks[perkCount] };
+
+				auto perk = new PerkRankData(a_perk, a_rank);
+				storage.push_back(*perk);
+
+				AllocatePerkRankArray(static_cast<std::uint32_t>(storage.size()));
+				std::ranges::copy(storage, perks);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		[[nodiscard]] bool ContainsKeyword(std::string_view a_editorID) const;
+
 		[[nodiscard]] static BSTHashMap<const TESNPC*, BSTArray<BGSHeadPart*>>& GetAlternateHeadPartListMap()
 		{
 			REL::Relocation<BSTHashMap<const TESNPC*, BSTArray<BGSHeadPart*>>*> map{ REL::ID(2662364), -0x8 };
 			return *map;
+		}
+
+		[[nodiscard]] static TESNPC* GetDefaultNPC(TESNPC* npc)
+		{
+			using func_t = decltype(&TESNPC::GetDefaultNPC);
+			REL::Relocation<func_t> func{ REL::ID(2207507) };
+			return func(npc);
 		}
 
 		[[nodiscard]] std::span<BGSHeadPart*> GetHeadParts(bool a_alternate = true) const
@@ -367,6 +412,19 @@ namespace RE
 			}
 		}
 
+		[[nodiscard]] std::optional<std::uint32_t> GetPerkIndex(BGSPerk* a_perk) const
+		{
+			if (perks) {
+				for (std::uint32_t i = 0; i < perkCount; i++) {
+					if (perks[i].perk == a_perk) {
+						return i;
+					}
+				}
+			}
+
+			return std::nullopt;
+		}
+
 		[[nodiscard]] TESNPC* GetRootFaceNPC() noexcept
 		{
 			return const_cast<TESNPC*>(static_cast<const TESNPC*>(this)->GetRootFaceNPC());
@@ -379,6 +437,33 @@ namespace RE
 				root = root->faceNPC;
 			}
 			return root;
+		}
+
+		[[nodiscard]] uint32_t GetSex() noexcept
+		{
+			using func_t = decltype(&TESNPC::GetSex);
+			REL::Relocation<func_t> func{ REL::ID(2207107) };
+			return func(this);
+		}
+
+		[[nodiscard]] TESSpellList::SpellData* GetSpellList()
+		{
+			if (!spellData) {
+				spellData = new TESSpellList::SpellData();
+			}
+			return spellData;
+		}
+
+		[[nodiscard]] bool HasApplicableKeywordString(std::string_view a_editorID) const;
+
+		[[nodiscard]] bool IsInFaction(const TESFaction* a_faction)
+		{
+			for (const auto& faction : factions) {
+				if (faction.faction == a_faction && faction.rank > -1) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		[[nodiscard]] bool UsingAlternateHeadPartList() const;

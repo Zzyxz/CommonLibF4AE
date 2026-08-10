@@ -4,6 +4,7 @@
 #include "RE/Bethesda/BSFixedString.h"
 #include "RE/Bethesda/BSLock.h"
 #include "RE/Bethesda/BSScript.h"
+#include "RE/Bethesda/BSStorage.h"
 #include "RE/Bethesda/BSTEvent.h"
 #include "RE/Bethesda/BSTFreeList.h"
 #include "RE/Bethesda/BSTHashMap.h"
@@ -13,9 +14,14 @@
 #include "RE/Bethesda/BSTTuple.h"
 #include "RE/Bethesda/BSTimer.h"
 #include "RE/Bethesda/MemoryManager.h"
+#include "RE/Bethesda/TESFile.h"
+#include "RE/NetImmerse/NiSmartPointer.h"
 
 namespace RE
 {
+	template <class F>
+	using BSTThreadScrapFunction = msvc::function<F>;
+
 	namespace BSScript
 	{
 		class IStore;
@@ -23,8 +29,30 @@ namespace RE
 		class IVMDebugInterface;
 		class IVMSaveLoadInterface;
 		class Object;
-
+		struct IHandleReaderWriter;
 		struct StatsEvent;
+	}
+
+	namespace PlayerDifficultySettingChanged
+	{
+		struct Event;
+	}
+
+	namespace RadioManager
+	{
+		struct PipboyTransmitterDetectionEvent;
+	}
+
+	namespace Workshop
+	{
+		struct ItemDestroyedEvent;
+		struct ItemGrabbedEvent;
+		struct ItemMovedEvent;
+		struct ItemPlacedEvent;
+		struct ItemRepairedEvent;
+		struct PowerOffEvent;
+		struct PowerOnEvent;
+		struct WorkshopModeEvent;
 	}
 
 	enum class ENUM_FORM_ID;
@@ -36,14 +64,66 @@ namespace RE
 	class TESHitEvent;
 	class TESObjectREFR;
 
+	struct BGSLocationLoadedEvent;
+	struct BGSOnPlayerCompanionDismiss;
+	struct BGSOnPlayerCreateRobotEvent;
+	struct BGSOnPlayerEnterVertibirdEvent;
+	struct BGSOnPlayerFallLongDistances;
+	struct BGSOnPlayerFireWeaponEvent;
+	struct BGSOnPlayerHealTeammateEvent;
+	struct BGSOnPlayerModArmorWeaponEvent;
+	struct BGSOnPlayerModRobotEvent;
+	struct BGSOnPlayerSwimmingEvent;
+	struct BGSOnPlayerUseWorkBenchEvent;
+	struct BGSOnSpeechChallengeAvailable;
 	struct BGSRadiationDamageEvent;
 	struct PositionPlayerEvent;
+	struct TESActivateEvent;
+	struct TESActiveEffectApplyRemoveEvent;
+	struct TESActorLocationChangeEvent;
+	struct TESBookReadEvent;
+	struct TESCellAttachDetachEvent;
+	struct TESCellFullyLoadedEvent;
+	struct TESCombatEvent;
+	struct TESCommandModeCompleteCommandEvent;
+	struct TESCommandModeEnterEvent;
+	struct TESCommandModeExitEvent;
+	struct TESCommandModeGiveCommandEvent;
+	struct TESConsciousnessEvent;
+	struct TESDeathEvent;
+	struct TESDeferredKillEvent;
+	struct TESDestructionStageChangedEvent;
+	struct TESEnterBleedoutEvent;
+	struct TESEnterSneakingEvent;
+	struct TESEscortWaitStartEvent;
+	struct TESEscortWaitStopEvent;
+	struct TESExitFurnitureEvent;
 	struct TESFormDeleteEvent;
 	struct TESFormIDRemapEvent;
+	struct TESFurnitureEvent;
+	struct TESGrabReleaseEvent;
 	struct TESInitScriptEvent;
+	struct TESLimbCrippleEvent;
+	struct TESLoadGameEvent;
+	struct TESLocationClearedEvent;
+	struct TESLockChangedEvent;
 	struct TESMagicEffectApplyEvent;
+	struct TESObjectLoadedEvent;
+	struct TESObjectREFRTranslationEvent;
+	struct TESOnPCDialogueTargetEvent;
+	struct TESOpenCloseEvent;
+	struct TESPickpocketFailedEvent;
+	struct TESQuestInitEvent;
+	struct TESResetEvent;
 	struct TESResolveNPCTemplatesEvent;
+	struct TESSellEvent;
+	struct TESSpellCastEvent;
+	struct TESSwitchRaceCompleteEvent;
+	struct TESTrapHitEvent;
+	struct TESTriggerEnterEvent;
+	struct TESTriggerLeaveEvent;
 	struct TESUniqueIDChangeEvent;
+	struct WorkshopNPCTransferEvent;
 
 	namespace GameScript
 	{
@@ -69,27 +149,6 @@ namespace RE
 			REL::Relocation<func_t> func{ REL::ID(2251028) };
 			return func(a_obj, a_error, a_vm, a_stackID, a_severity);
 		}
-
-		class __declspec(novtable) CombatEventHandler :
-			public BSTSingletonSDM<CombatEventHandler>,     // 18
-			public BSTEventSink<TESHitEvent>,               // 00
-			public BSTEventSink<TESMagicEffectApplyEvent>,  // 08
-			public BSTEventSink<BGSRadiationDamageEvent>    // 10
-		{
-		public:
-			static constexpr auto RTTI{ RTTI::GameScript__CombatEventHandler };
-			static constexpr auto VTABLE{ VTABLE::GameScript__CombatEventHandler };
-
-			// members
-			BSTSmartPointer<BSScript::IVirtualMachine> vm;                                                                  // 20
-			BSSpinLock hitLock;                                                                                             // 28
-			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::HitRegistrationList>> hitEvents;                            // 30
-			BSSpinLock magicEffectApplyLock;                                                                                // 60
-			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::MagicEffectApplyRegistrationList>> magicEffectApplyEvents;  // 68
-			BSSpinLock radiationDamageLock;                                                                                 // 98
-			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::RadiationDamageRegistrationList>> radiationDamageEvents;    // A0
-		};
-		static_assert(sizeof(CombatEventHandler) == 0xD0);
 
 		class __declspec(novtable) DelayFunctor :
 			public BSIntrusiveRefCounted  // 08
@@ -190,11 +249,16 @@ namespace RE
 			void ReleaseHandle(std::size_t a_handle) override;                                          // 0E
 			void ConvertHandleToString(std::size_t a_handle, BSFixedString& a_string) const override;   // 0F
 
-			[[nodiscard]] static std::uint64_t GetHandleForInventoryID(std::uint16_t a_uniqueID, ENUM_FORM_ID a_containerFormID) noexcept
+			[[nodiscard]] static std::uint64_t GetHandleForInventoryID(std::uint16_t a_uniqueID, std::uint32_t a_containerFormID) noexcept
 			{
 				return static_cast<std::uint64_t>(static_cast<std::uint32_t>(a_containerFormID)) |
 				       (static_cast<std::uint64_t>(a_uniqueID) << 32ull) |
 				       (1ull << (32ull + 16ull));
+			}
+
+			[[nodiscard]] static std::uint64_t GetHandleForInventoryID(std::uint16_t a_uniqueID, ENUM_FORM_ID a_containerFormID) noexcept
+			{
+				return GetHandleForInventoryID(a_uniqueID, static_cast<std::uint32_t>(a_containerFormID));
 			}
 
 			void GetInventoryObjFromHandle(std::uint64_t a_cobj, TESObjectREFR*& a_container, std::uint16_t& a_uniqueID, TESObjectREFR*& a_inWorldREFR)
@@ -427,6 +491,18 @@ namespace RE
 			return func(this, a_functor);
 		}
 
+		void SendEventToObjectAndRelated(
+			std::size_t a_object,
+			const BSFixedString& a_eventName,
+			const BSTThreadScrapFunction<bool(BSScrapArray<BSScript::Variable>&)>& a_args,
+			const BSTThreadScrapFunction<bool(const BSTSmartPointer<BSScript::Object>&)>& a_filter,
+			const BSTSmartPointer<BSScript::IStackCallbackFunctor>& a_callback)
+		{
+			using func_t = decltype(&GameVM::SendEventToObjectAndRelated);
+			REL::Relocation<func_t> func{ REL::ID(2251344) };
+			return func(this, a_object, a_eventName, a_args, a_filter, a_callback);
+		}
+
 		// members
 		BSTSmartPointer<BSScript::IVirtualMachine> impl;                                                // 00B0
 		BSScript::IVMSaveLoadInterface* saveLoadInterface;                                              // 00B8
@@ -475,6 +551,105 @@ namespace RE
 
 	namespace GameScript
 	{
+		class __declspec(novtable) BasicEventHandler :
+			public BSTEventSink<BGSLocationLoadedEvent>,                         // 000
+			public BSTEventSink<BGSOnPlayerCompanionDismiss>,                    // 008
+			public BSTEventSink<BGSOnPlayerEnterVertibirdEvent>,                 // 010
+			public BSTEventSink<BGSOnPlayerFallLongDistances>,                   // 018
+			public BSTEventSink<BGSOnPlayerFireWeaponEvent>,                     // 020
+			public BSTEventSink<BGSOnPlayerHealTeammateEvent>,                   // 028
+			public BSTEventSink<BGSOnPlayerModArmorWeaponEvent>,                 // 030
+			public BSTEventSink<BGSOnPlayerCreateRobotEvent>,                    // 038
+			public BSTEventSink<BGSOnPlayerModRobotEvent>,                       // 040
+			public BSTEventSink<BGSOnPlayerSwimmingEvent>,                       // 048
+			public BSTEventSink<BGSOnPlayerUseWorkBenchEvent>,                   // 050
+			public BSTEventSink<BGSOnSpeechChallengeAvailable>,                  // 058
+			public BSTEventSink<PlayerDifficultySettingChanged::Event>,          // 060
+			public BSTEventSink<RadioManager::PipboyTransmitterDetectionEvent>,  // 068
+			public BSTEventSink<TESActiveEffectApplyRemoveEvent>,                // 070
+			public BSTEventSink<TESActivateEvent>,                               // 078
+			public BSTEventSink<TESActorLocationChangeEvent>,                    // 080
+			public BSTEventSink<TESBookReadEvent>,                               // 088
+			public BSTEventSink<TESCellAttachDetachEvent>,                       // 090
+			public BSTEventSink<TESCellFullyLoadedEvent>,                        // 098
+			public BSTEventSink<TESCombatEvent>,                                 // 0A0
+			public BSTEventSink<TESCommandModeCompleteCommandEvent>,             // 0A8
+			public BSTEventSink<TESCommandModeEnterEvent>,                       // 0B0
+			public BSTEventSink<TESCommandModeExitEvent>,                        // 0B8
+			public BSTEventSink<TESCommandModeGiveCommandEvent>,                 // 0C0
+			public BSTEventSink<TESDeathEvent>,                                  // 0C8
+			public BSTEventSink<TESDeferredKillEvent>,                           // 0D0
+			public BSTEventSink<TESDestructionStageChangedEvent>,                // 0D8
+			public BSTEventSink<TESEnterBleedoutEvent>,                          // 0E0
+			public BSTEventSink<TESEnterSneakingEvent>,                          // 0E8
+			public BSTEventSink<TESEscortWaitStartEvent>,                        // 0F0
+			public BSTEventSink<TESEscortWaitStopEvent>,                         // 0F8
+			public BSTEventSink<TESExitFurnitureEvent>,                          // 100
+			public BSTEventSink<TESFurnitureEvent>,                              // 108
+			public BSTEventSink<TESGrabReleaseEvent>,                            // 110
+			public BSTEventSink<TESConsciousnessEvent>,                          // 118
+			public BSTEventSink<TESLimbCrippleEvent>,                            // 120
+			public BSTEventSink<TESLoadGameEvent>,                               // 128
+			public BSTEventSink<TESLocationClearedEvent>,                        // 130
+			public BSTEventSink<TESLockChangedEvent>,                            // 138
+			public BSTEventSink<TESObjectLoadedEvent>,                           // 140
+			public BSTEventSink<TESObjectREFRTranslationEvent>,                  // 148
+			public BSTEventSink<TESOnPCDialogueTargetEvent>,                     // 150
+			public BSTEventSink<TESOpenCloseEvent>,                              // 158
+			public BSTEventSink<TESPickpocketFailedEvent>,                       // 160
+			public BSTEventSink<TESQuestInitEvent>,                              // 168
+			public BSTEventSink<TESResetEvent>,                                  // 170
+			public BSTEventSink<TESSellEvent>,                                   // 178
+			public BSTEventSink<TESSpellCastEvent>,                              // 180
+			public BSTEventSink<TESSwitchRaceCompleteEvent>,                     // 188
+			public BSTEventSink<TESTrapHitEvent>,                                // 190
+			public BSTEventSink<TESTriggerEnterEvent>,                           // 198
+			public BSTEventSink<TESTriggerLeaveEvent>,                           // 1A0
+			public BSTEventSink<Workshop::ItemDestroyedEvent>,                   // 1A8
+			public BSTEventSink<Workshop::ItemMovedEvent>,                       // 1B0
+			public BSTEventSink<Workshop::ItemPlacedEvent>,                      // 1B8
+			public BSTEventSink<Workshop::ItemRepairedEvent>,                    // 1C0
+			public BSTEventSink<Workshop::ItemGrabbedEvent>,                     // 1C8
+			public BSTEventSink<Workshop::PowerOffEvent>,                        // 1D0
+			public BSTEventSink<Workshop::PowerOnEvent>,                         // 1D8
+			public BSTEventSink<WorkshopNPCTransferEvent>,                       // 1E0
+			public BSTEventSink<Workshop::WorkshopModeEvent>,                    // 1E8
+			public BSTSingletonSDM<BasicEventHandler>                            // 1F0
+		{
+		public:
+			static constexpr auto RTTI{ RTTI::GameScript__BasicEventHandler };
+			static constexpr auto VTABLE{ VTABLE::GameScript__BasicEventHandler };
+
+			// members
+			GameVM* gameVM;                                 // 1F8
+			FragmentSystem* fragmentSystem;                 // 200
+			HandlePolicy* handlePolicy;                     // 208
+			ObjectBindPolicy* objectBindPolicy;             // 210
+			BSTSmartPointer<BSScript::IVirtualMachine> vm;  // 218
+		};
+		static_assert(sizeof(BasicEventHandler) == 0x220);
+
+		class __declspec(novtable) CombatEventHandler :
+			public BSTEventSink<TESHitEvent>,               // 00
+			public BSTEventSink<TESMagicEffectApplyEvent>,  // 08
+			public BSTEventSink<BGSRadiationDamageEvent>,   // 10
+			public BSTSingletonSDM<CombatEventHandler>      // 18
+		{
+		public:
+			static constexpr auto RTTI{ RTTI::GameScript__CombatEventHandler };
+			static constexpr auto VTABLE{ VTABLE::GameScript__CombatEventHandler };
+
+			// members
+			BSTSmartPointer<BSScript::IVirtualMachine> vm;                                                                  // 20
+			BSSpinLock hitLock;                                                                                             // 28
+			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::HitRegistrationList>> hitEvents;                            // 30
+			BSSpinLock magicEffectApplyLock;                                                                                // 60
+			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::MagicEffectApplyRegistrationList>> magicEffectApplyEvents;  // 68
+			BSSpinLock radiationDamageLock;                                                                                 // 98
+			BSTHashMap<std::uint64_t, BSTSmartPointer<Internal::RadiationDamageRegistrationList>> radiationDamageEvents;    // A0
+		};
+		static_assert(sizeof(CombatEventHandler) == 0xD0);
+
 		class RefrOrInventoryObj
 		{
 		public:
@@ -504,5 +679,44 @@ namespace RE
 			REL::Relocation<func_t> func{ REL::ID(2249773) };
 			return func(a_scriptObj, a_cobj, a_vm);
 		}
+
+		class __declspec(novtable) BaseHandleReaderWriter :
+			public RE::BSScript::IHandleReaderWriter
+		{
+		public:
+			inline static constexpr auto RTTI = { RTTI::GameScript__BaseHandleReaderWriter };
+			inline static constexpr auto VTABLE = { VTABLE::GameScript__BaseHandleReaderWriter };
+
+			~BaseHandleReaderWriter() override;                                                       // 0
+			virtual std::uint16_t GetHandleVersion() const override;                                  // 142D8E390
+			virtual bool WriteHandle(BSStorage& storage, std::uint64_t) const override;               // 142D8E398
+			virtual bool ReadHandle(BSStorage const& storage, std::uint64_t&) const override;         // 142D8E3A0
+			virtual bool ReadHandleNoRemap(BSStorage const& storage, std::uint64_t&) const override;  // 142D8E3A8
+
+			virtual bool WriteFormID(BSStorage& storage, std::uint32_t) const = 0;        // 142D8E3B0
+			virtual bool ReadFormID(const BSStorage& storage, std::uint32_t&) const = 0;  // 142D8E3B8
+
+			// members
+			BSScript::IObjectHandlePolicy* objectHandlePolicy;  //08
+		};
+		static_assert(sizeof(BaseHandleReaderWriter) == 0x10);
+		class DataFileHandleReaderWriter :
+			public BaseHandleReaderWriter
+		{
+		public:
+			inline static constexpr auto RTTI = { RTTI::GameScript__DataFileHandleReaderWriter };
+			inline static constexpr auto VTABLE = { VTABLE::GameScript__DataFileHandleReaderWriter };
+
+			~DataFileHandleReaderWriter() override;  // 0
+			//DataFileHandleReaderWriter(TESFile *f, BSScript::IObjectHandlePolicy * objectHandlePolicy);
+			virtual bool WriteFormID(BSStorage& storage, std::uint32_t) const override;        // 142D8E3B0
+			virtual bool ReadFormID(const BSStorage& storage, std::uint32_t&) const override;  // 142D8E3B8
+
+			// members
+			TESFile* file;  //10
+		};
+		static_assert(sizeof(DataFileHandleReaderWriter) == 0x18);
+
 	}
+
 }

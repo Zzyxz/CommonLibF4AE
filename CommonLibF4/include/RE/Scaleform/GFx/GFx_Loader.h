@@ -84,6 +84,15 @@ namespace RE::Scaleform::GFx
 	};
 	static_assert(sizeof(ActionControl) == 0x20);
 
+	class __declspec(novtable) Translator :
+		public State
+	{
+	public:
+		// members
+		std::uint32_t mode;  //18
+	};
+	static_assert(sizeof(Translator) == 0x20);
+
 	class __declspec(novtable) StateBag :
 		public FileTypeConstants  // 00
 	{

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "RE/Bethesda/BSFixedString.h"
 #include "RE/Bethesda/BSStringT.h"
 #include "RE/Bethesda/BSTEvent.h"
+#include "RE/Bethesda/BSTHashMap.h"
 #include "RE/Bethesda/BSTSingleton.h"
 #include "RE/Scaleform/GFx/GFx_Player.h"
 #include "RE/Scaleform/Kernel/SF_RefCount.h"
@@ -53,6 +55,23 @@ namespace RE
 		bool initialized;                                                  // 390
 	};
 	static_assert(sizeof(BSScaleformRenderer) == 0x398);
+
+	struct BSTranslator
+	{
+	public:
+		// members
+		BSTHashMap<BSFixedStringWCS, BSFixedStringWCS> translationMap;  //00
+	};
+	static_assert(sizeof(BSTranslator) == 0x30);
+
+	class __declspec(novtable) BSScaleformTranslator :
+		public Scaleform::GFx::Translator
+	{
+	public:
+		// members
+		BSTranslator translator;  //20
+	};
+	static_assert(sizeof(BSScaleformTranslator) == 0x50);
 
 	class __declspec(novtable) BSScaleformManager :
 		public BSTEventSink<SFRendererInitializedEvent>,  // 00

@@ -61,7 +61,7 @@ namespace RE
 		};
 		static_assert(sizeof(StackDataCompareFunctor) == 0x8);
 
-		class CheckStackIDFunctor :
+		class alignas(0x08) CheckStackIDFunctor :
 			public StackDataCompareFunctor  // 00
 		{
 		public:
@@ -80,7 +80,7 @@ namespace RE
 		};
 		static_assert(sizeof(CheckStackIDFunctor) == 0x10);
 
-		class __declspec(novtable) StackDataWriteFunctor
+		class __declspec(novtable) alignas(0x08) StackDataWriteFunctor
 		{
 		public:
 			static constexpr auto RTTI{ RTTI::BGSInventoryItem__StackDataWriteFunctor };
@@ -127,6 +127,13 @@ namespace RE
 		};
 		static_assert(sizeof(ModifyModDataFunctor) == 0x30);
 
+		bool FindAndWriteStackData(StackDataCompareFunctor& a_compareFunc, StackDataWriteFunctor& a_writeFunc, bool a_manualMerge, ObjectRefHandle a_owner)
+		{
+			using func_t = decltype(&BGSInventoryItem::FindAndWriteStackData);
+			REL::Relocation<func_t> func{ REL::ID(2194123) };
+			return func(this, a_compareFunc, a_writeFunc, a_manualMerge, a_owner);
+		}
+
 		[[nodiscard]] std::uint32_t GetCount() const noexcept;
 		[[nodiscard]] Stack* GetStackByID(std::uint32_t a_stackID) const
 		{
@@ -138,9 +145,77 @@ namespace RE
 			return iter;
 		}
 
+		[[nodiscard]] const char* GetDisplayFullName(std::uint32_t a_stackID)
+		{
+			using func_t = decltype(&BGSInventoryItem::GetDisplayFullName);
+			REL::Relocation<func_t> func{ REL::ID(2194079) };
+			return func(this, a_stackID);
+		}
+
+		[[nodiscard]] TBO_InstanceData* GetInstanceData(std::uint32_t a_stackID)
+		{
+			using func_t = decltype(&BGSInventoryItem::GetInstanceData);
+			REL::Relocation<func_t> func{ REL::ID(2194072) };
+			return func(this, a_stackID);
+		}
+
+		[[nodiscard]] TBO_InstanceData* GetOwnerForm()
+		{
+			using func_t = decltype(&BGSInventoryItem::GetOwnerForm);
+			REL::Relocation<func_t> func{ REL::ID(2194100) };
+			return func(this);
+		}
+
+		[[nodiscard]] std::int32_t GetInventoryValue(std::uint32_t a_stackID, bool a_scale) const
+		{
+			using func_t = decltype(&BGSInventoryItem::GetInventoryValue);
+			REL::Relocation<func_t> func{ REL::ID(2194099) };
+			return func(this, a_stackID, a_scale);
+		}
+
+		bool GetStackCount()
+		{
+			using func_t = decltype(&BGSInventoryItem::GetStackCount);
+			REL::Relocation<func_t> func{ REL::ID(2194107) };
+			return func(this);
+		}
+
+		bool IsQuestObject(std::int32_t a_stackIterations)
+		{
+			using func_t = decltype(&BGSInventoryItem::IsQuestObject);
+			REL::Relocation<func_t> func{ REL::ID(2194076) };
+			return func(this, a_stackIterations);
+		}
+
 		// members
 		TESBoundObject* object;            // 00
 		BSTSmartPointer<Stack> stackData;  // 08
 	};
 	static_assert(sizeof(BGSInventoryItem) == 0x10);
+
+	class __declspec(novtable) ApplyChangesFunctor :
+		public BGSInventoryItem::StackDataWriteFunctor  // 00
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::__ApplyChangesFunctor };
+		static constexpr auto VTABLE{ VTABLE::__ApplyChangesFunctor };
+
+		// override
+		virtual void WriteDataImpl(TESBoundObject& a_baseObj, BGSInventoryItem::Stack& a_stack) override  // 01
+		{
+			using func_t = decltype(&ApplyChangesFunctor::WriteDataImpl);
+			REL::Relocation<func_t> func{ REL::ID(2223194) };
+			return func(this, a_baseObj, a_stack);
+		}
+
+		// members
+		BGSObjectInstanceExtra* extra;       // 10
+		TESBoundObject* object;              // 18
+		const BGSMod::Attachment::Mod* mod;  // 20
+		std::uint8_t rank;                   // 28
+		bool remove;                         // 29
+		bool excludeTemporary;               // 2A
+		std::int8_t favoriteIndex;           // 2B
+	};
+	static_assert(sizeof(ApplyChangesFunctor) == 0x30);
 }

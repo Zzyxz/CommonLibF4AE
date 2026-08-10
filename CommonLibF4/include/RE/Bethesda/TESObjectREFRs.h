@@ -18,7 +18,6 @@ namespace RE
 {
 	enum class BIPED_OBJECT;
 	enum class IO_TASK_PRIORITY;
-	enum class ITEM_REMOVE_REASON;
 
 	namespace MagicSystem
 	{
@@ -50,6 +49,7 @@ namespace RE
 	class NiNode;
 	class NiTransform;
 	class NonActorMagicCaster;
+	class SimpleAnimationGraphManagerLoadingTask;
 	class TargetEntry;
 	class TBO_InstanceData;
 	class TrapData;
@@ -57,9 +57,13 @@ namespace RE
 	class WeaponAnimationGraphManagerHolder;
 
 	struct BSActiveGraphIfInactiveEvent;
-	struct BSAnimationGraphEvent;
+	struct BSAnimationGraphEvent
+	{
+		TESObjectREFR* refr;
+		BSFixedString animEvent;
+		BSFixedString argument;  //Something like SoundPlay.>>Descriptorname<<
+	};
 	struct BSAnimationUpdateData;
-	struct LOADED_REF_DATA;
 
 	namespace ActorValueEvents
 	{
@@ -90,6 +94,16 @@ namespace RE
 		};
 		static_assert(sizeof(Event) == 0x18);
 	}
+
+	enum class ITEM_REMOVE_REASON
+	{
+		kNone = 0,
+		kStealing = 1,
+		kSelling = 2,
+		KDropping = 3,
+		kStoreContainer = 4,
+		kStoreTeammate = 5
+	};
 
 	enum class RESET_3D_FLAGS
 	{
@@ -168,8 +182,54 @@ namespace RE
 		virtual void PostUpdateAnimationGraphManager([[maybe_unused]] const BSTSmartPointer<BSAnimationGraphManager>& a_animGraphMgr) const { return; }                                                                              // 17
 		virtual void PreLoadAnimationGraphManager([[maybe_unused]] const BSTSmartPointer<BSAnimationGraphManager>& a_animGraphMgr) { return; }                                                                                       // 18
 		virtual void PostLoadAnimationGraphManager([[maybe_unused]] const BSTSmartPointer<BSAnimationGraphManager>& a_animGraphMgr) { return; }                                                                                      // 19
+
+		bool SetGraphVariableBool(const BSFixedString& a_variable, bool a_var)
+		{
+			using func_t = decltype(&IAnimationGraphManagerHolder::SetGraphVariableBool);
+			REL::Relocation<func_t> func{ REL::ID(2214543) };
+			return func(this, a_variable, a_var);
+		};
+
+		bool SetGraphVariableFloat(const BSFixedString& a_variable, float a_var)
+		{
+			using func_t = decltype(&IAnimationGraphManagerHolder::SetGraphVariableFloat);
+			REL::Relocation<func_t> func{ REL::ID(2214545) };
+			return func(this, a_variable, a_var);
+		};
+
+		bool SetGraphVariableInt(const BSFixedString& a_variable, int a_var)
+		{
+			using func_t = decltype(&IAnimationGraphManagerHolder::SetGraphVariableInt);
+			REL::Relocation<func_t> func{ REL::ID(2214544) };
+			return func(this, a_variable, a_var);
+		};
+
+		bool RevertAnimationGraphManager(bool unk = true)
+		{
+			using func_t = decltype(&IAnimationGraphManagerHolder::RevertAnimationGraphManager);
+			REL::Relocation<func_t> func{ REL::ID(2214541) };
+			return func(this, unk);
+		}
 	};
 	static_assert(sizeof(IAnimationGraphManagerHolder) == 0x8);
+
+	class __declspec(novtable) SimpleAnimationGraphManagerHolder :
+		public IAnimationGraphManagerHolder
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::SimpleAnimationGraphManagerHolder };
+		static constexpr auto VTABLE{ VTABLE::SimpleAnimationGraphManagerHolder };
+
+		virtual ~SimpleAnimationGraphManagerHolder() = default;  // 00
+
+		// add
+		virtual void BackgroundTaskFinishedLoading() { return; }  // 01
+
+		// members
+		BSTSmartPointer<BSAnimationGraphManager> animationGraphManager;  // 08
+		NiPointer<SimpleAnimationGraphManagerLoadingTask> loadingTask;   // 10
+	};
+	static_assert(sizeof(SimpleAnimationGraphManagerHolder) == 0x18);
 
 	class BGSEquipIndex
 	{
@@ -203,9 +263,23 @@ namespace RE
 	class BGSObjectInstance
 	{
 	public:
+		BGSObjectInstance() = default;
+		BGSObjectInstance(TESForm* a_object, TBO_InstanceData* a_instanceData)
+		{
+			ctor(a_object, a_instanceData);
+		}
+
 		// members
 		TESForm* object{ nullptr };                      // 00
 		BSTSmartPointer<TBO_InstanceData> instanceData;  // 08
+
+	private:
+		BGSObjectInstance* ctor(TESForm* a_object, TBO_InstanceData* a_instanceData)
+		{
+			using func_t = decltype(&BGSObjectInstance::ctor);
+			REL::Relocation<func_t> func{ REL::ID(2197563) };
+			return func(this, a_object, a_instanceData);
+		}
 	};
 	static_assert(sizeof(BGSObjectInstance) == 0x10);
 
@@ -214,6 +288,11 @@ namespace RE
 		public BGSObjectInstance
 	{
 	public:
+		BGSObjectInstanceT() = default;
+		BGSObjectInstanceT(T* a_object, TBO_InstanceData* a_instanceData) :
+			BGSObjectInstance(a_object, a_instanceData)
+		{
+		}
 	};
 
 	struct OBJ_REFR
@@ -226,10 +305,32 @@ namespace RE
 	};
 	static_assert(sizeof(OBJ_REFR) == 0x30);
 
+	struct LOADED_REF_DATA
+	{
+	public:
+		// members
+		void* handleList;                // 00 - TODO
+		NiPointer<NiAVObject> data3D;    // 08
+		TESWaterForm* currentWaterType;  // 10
+		float relevantWaterHeight;       // 18
+		float cachedRadius;              // 1C
+		std::uint16_t flags;             // 20
+		std::int16_t underwaterCount;    // 22
+	};
+	static_assert(sizeof(LOADED_REF_DATA) == 0x28);
+
 	class BGSInventoryList :
 		public BSTEventSource<BGSInventoryListEvent::Event>  // 00
 	{
 	public:
+		BGSInventoryList(const TESContainer* a_container, ObjectRefHandle a_owner)
+		{
+			auto native_handle = a_owner.native_handle();
+			ctor(a_container, &native_handle);
+		}
+
+		F4_HEAP_REDEFINE_NEW(BGSInventoryList)
+
 		[[nodiscard]] static bool StandardObjectCompareCallbackFn(TESBoundObject* a_lhs, TESBoundObject* a_rhs)
 		{
 			return a_lhs == a_rhs;
@@ -269,6 +370,14 @@ namespace RE
 		float cachedWeight;               // 70
 		ObjectRefHandle owner;            // 74
 		BSReadWriteLock rwLock;           // 78
+
+	private:
+		void ctor(const TESContainer* a_container, std::uint32_t* a_owner)
+		{
+			using func_t = decltype(&BGSInventoryList::ctor);
+			REL::Relocation<func_t> func{ REL::ID(2194153) };
+			return func(this, a_container, a_owner);
+		}
 	};
 	static_assert(sizeof(BGSInventoryList) == 0x80);
 
@@ -341,6 +450,45 @@ namespace RE
 	};
 	static_assert(sizeof(BipedAnim) == 0x1E58);
 
+	enum class LOCK_LEVEL
+	{
+		kUnlocked = static_cast<std::underlying_type_t<BIPED_OBJECT>>(-1),
+		kEasy = 0,
+		kAverage = 1,
+		kHard = 2,
+		kVeryHard = 3,
+		kRequiresKey = 4,
+		kInaccessible = 5,
+		kTerminal = 6,
+		kBarred = 7,
+		kChained = 8,
+	};
+
+	struct REFR_LOCK
+	{
+	public:
+		[[nodiscard]] LOCK_LEVEL GetLockLevel(TESObjectREFR* a_owner)
+		{
+			using func_t = decltype(&REFR_LOCK::GetLockLevel);
+			REL::Relocation<func_t> func{ REL::ID(2191018) };
+			return func(this, a_owner);
+		}
+
+		void SetLocked(bool a_locked)
+		{
+			using func_t = decltype(&REFR_LOCK::SetLocked);
+			REL::Relocation<func_t> func{ REL::ID(2191020) };
+			return func(this, a_locked);
+		}
+
+		// members
+		std::uint8_t baseLevel;  // 00
+		TESKey* key;             // 08
+		std::uint8_t flags;      // 10
+		std::uint32_t numTries;  // 14
+	};
+	static_assert(sizeof(REFR_LOCK) == 0x18);
+
 	class __declspec(novtable) TESObjectREFR :
 		public TESForm,                                                  // 000
 		public BSHandleRefObject,                                        // 020
@@ -357,7 +505,27 @@ namespace RE
 		static constexpr auto VTABLE{ VTABLE::TESObjectREFR };
 		static constexpr auto FORM_ID{ ENUM_FORM_ID::kREFR };
 
-		struct RemoveItemData;
+		struct RemoveItemData
+		{
+		public:
+			RemoveItemData(TESForm* a_form, std::int32_t a_count) :
+				RemoveItemData(a_form->As<TESBoundObject>(), a_count)
+			{}
+
+			RemoveItemData(TESBoundObject* a_object, std::int32_t a_count) :
+				object(a_object), count(a_count)
+			{}
+
+			// members
+			BSTSmallArray<std::uint32_t, 4> stackData;               // 00
+			TESBoundObject* object{ nullptr };                       // 20
+			std::int32_t count{ 0 };                                 // 28
+			ITEM_REMOVE_REASON reason{ ITEM_REMOVE_REASON::kNone };  // 2C
+			TESObjectREFR* a_otherContainer{ nullptr };              // 30
+			const NiPoint3* dropLoc{ nullptr };                      // 38
+			const NiPoint3* rotate{ nullptr };                       // 40
+		};
+		static_assert(sizeof(RemoveItemData) == 0x48);
 
 		F4_HEAP_REDEFINE_NEW(TESObjectREFR);
 
@@ -487,6 +655,41 @@ namespace RE
 		virtual void InitDefaultWornImpl(bool a_weapon, bool a_allowChanges);                                                                                                                                                                         // C4
 		virtual bool HasKeywordHelper(const BGSKeyword* a_keyword, const TBO_InstanceData* a_data) const;                                                                                                                                             // C5
 
+		bool ActivateRef(TESObjectREFR* a_actionRef, TESBoundObject* a_objectToGet, std::int32_t a_count, bool a_defaultProcessingOnly, bool a_fromScript, bool a_looping)
+		{
+			using func_t = decltype(&TESObjectREFR::ActivateRef);
+			REL::Relocation<func_t> func{ REL::ID(2201147) };
+			return func(this, a_actionRef, a_objectToGet, a_count, a_defaultProcessingOnly, a_fromScript, a_looping);
+		}
+
+		void AddInventoryItem(TESBoundObject* a_object, BSTSmartPointer<ExtraDataList> a_extra, std::uint32_t a_count, TESObjectREFR* a_oldContainer, const INSTANCE_FILTER* a_filter, TESObjectREFR* a_overrideRef)
+		{
+			using func_t = decltype(&TESObjectREFR::AddInventoryItem);
+			REL::Relocation<func_t> func{ REL::ID(2200949) };
+			return func(this, a_object, a_extra, a_count, a_oldContainer, a_filter, a_overrideRef);
+		}
+
+		void AddKeyword(BGSKeyword* kwd)
+		{
+			using func_t = decltype(&RE::TESObjectREFR::AddKeyword);
+			REL::Relocation<func_t> func{ REL::ID(2200860) };
+			return func(this, kwd);
+		}
+
+		void AddLockChange()
+		{
+			using func_t = decltype(&TESObjectREFR::AddLockChange);
+			REL::Relocation<func_t> func{ REL::ID(2200731) };
+			return func(this);
+		}
+
+		void Enable(bool a_resetInventory)
+		{
+			using func_t = decltype(&TESObjectREFR::Enable);
+			REL::Relocation<func_t> func{ REL::ID(2201150) };
+			return func(this, a_resetInventory);
+		}
+
 		void FindAndWriteStackDataForInventoryItem(
 			TESBoundObject* a_object,
 			BGSInventoryItem::StackDataCompareFunctor& a_compareFunc,
@@ -499,14 +702,210 @@ namespace RE
 			}
 		}
 
+		[[nodiscard]] BGSLocation* GetCurrentLocation() const
+		{
+			using func_t = decltype(&TESObjectREFR::GetCurrentLocation);
+			REL::Relocation<func_t> func{ REL::ID(2201163) };
+			return func(this);
+		}
+
+		[[nodiscard]] TESWorldSpace* GetWorldSpace() const
+		{
+			using func_t = decltype(&TESObjectREFR::GetWorldSpace);
+			REL::Relocation<func_t> func{ REL::ID(2201167) };
+			return func(this);
+		}
+
+		uint32_t GetEquipIndex(BGSEquipSlot a1)
+		{
+			using func_t = decltype(&TESObjectREFR::GetEquipIndex);
+			REL::Relocation<func_t> func{ REL::ID(2200981) };
+			return func(this, a1);
+		}
+
+		float GetDistance(TESObjectREFR* a1, bool a2, bool a3)
+		{
+			using func_t = decltype(&TESObjectREFR::GetDistance);
+			REL::Relocation<func_t> func{ REL::ID(2201174) };
+			return func(this, a1, a2, a3);
+		}
+
 		[[nodiscard]] TESBoundObject* GetObjectReference() const noexcept { return data.objectReference; }
+
+		[[nodiscard]] TESForm* GetOwner()
+		{
+			using func_t = decltype(&TESObjectREFR::GetOwner);
+			REL::Relocation<func_t> func{ REL::ID(2202616) };
+			return func(this);
+		}
+
+		[[nodiscard]] TESForm* GetOwnerAsFaction()
+		{
+			using func_t = decltype(&TESObjectREFR::GetOwner);
+			REL::Relocation<func_t> func{ REL::ID(2202616) };
+			return func(this);
+		}
+
 		[[nodiscard]] TESObjectCELL* GetParentCell() const noexcept { return parentCell; }
+
+		[[nodiscard]] NiPoint3 GetPosition() const noexcept { return data.location; }
+
+		[[nodiscard]] float GetPositionX() const noexcept { return data.location.x; }
+
+		[[nodiscard]] float GetPositionY() const noexcept { return data.location.y; }
+
+		[[nodiscard]] float GetPositionZ() const noexcept { return data.location.z; }
+
+		[[nodiscard]] std::int64_t GetGoldAmount()
+		{
+			using func_t = decltype(&TESObjectREFR::GetGoldAmount);
+			REL::Relocation<func_t> func{ REL::ID(2200923) };
+			return func(this);
+		}
+
+		[[nodiscard]] ObjectRefHandle GetHandle()
+		{
+			using func_t = decltype(&TESObjectREFR::GetHandle);
+			REL::Relocation<func_t> func{ REL::ID(2201196) };
+			return func(this);
+		}
+
+		[[nodiscard]] std::uint32_t GetInventoryObjectCount(const TESBoundObject* a_object)
+		{
+			using func_t = decltype(&TESObjectREFR::GetInventoryObjectCount);
+			REL::Relocation<func_t> func{ REL::ID(2200939) };
+			return func(this, a_object);
+		}
+
+		[[nodiscard]] TESObjectREFR* GetLinkedRef(BGSKeyword* a_keyword)
+		{
+			using func_t = decltype(&TESObjectREFR::GetLinkedRef);
+			REL::Relocation<func_t> func{ REL::ID(2202683) };
+			return func(this, a_keyword);
+		}
+
+		[[nodiscard]] REFR_LOCK* GetLock()
+		{
+			using func_t = decltype(&TESObjectREFR::GetLock);
+			REL::Relocation<func_t> func{ REL::ID(2202648) };
+			return func(this);
+		}
 
 		[[nodiscard]] float GetWeightInContainer()
 		{
 			using func_t = decltype(&TESObjectREFR::GetWeightInContainer);
 			REL::Relocation<func_t> func{ REL::ID(2201001) };
 			return func(this);
+		}
+
+		[[nodiscard]] bool IsCrimeToActivate()
+		{
+			using func_t = decltype(&TESObjectREFR::IsCrimeToActivate);
+			REL::Relocation<func_t> func{ REL::ID(2201180) };
+			return func(this);
+		}
+
+		[[nodiscard]] bool IsInWater()
+		{
+			return GetRelevantWaterHeight() > data.location.z;
+		}
+
+		[[nodiscard]] float GetRelevantWaterHeight()
+		{
+			using func_t = decltype(&TESObjectREFR::GetRelevantWaterHeight);
+			REL::Relocation<func_t> func{ REL::ID(2201189) };
+			return func(this);
+		}
+
+		void MarkAsDeleted()
+		{
+			using func_t = decltype(&TESObjectREFR::MarkAsDeleted);
+			REL::Relocation<func_t> func{ REL::ID(2201156) };
+			return func(this);
+		}
+
+		void MoveRefToNewSpace(TESObjectCELL* a_interior, TESWorldSpace* a_world)
+		{
+			using func_t = decltype(&TESObjectREFR::MoveRefToNewSpace);
+			REL::Relocation<func_t> func{ REL::ID(2201149) };
+			return func(this, a_interior, a_world);
+		}
+
+		void RemoveKeyword(BGSKeyword* kwd)
+		{
+			using func_t = decltype(&RE::TESObjectREFR::RemoveKeyword);
+			REL::Relocation<func_t> func{ REL::ID(2200861) };
+			return func(this, kwd);
+		}
+
+		void SetAngleOnReference(const NiPoint3& a_point)
+		{
+			using func_t = decltype(&TESObjectREFR::SetAngleOnReference);
+			REL::Relocation<func_t> func{ REL::ID(2201134) };
+			return func(this, a_point);
+		}
+
+		void SetLinkedRef(Actor* a_actor, BGSKeyword* a_keyword)
+		{
+			using func_t = decltype(&TESObjectREFR::SetLinkedRef);
+			REL::Relocation<func_t> func{ REL::ID(2202684) };
+			return func(this, a_actor, a_keyword);
+		}
+
+		void SetLocationOnReference(const NiPoint3& a_point)
+		{
+			using func_t = decltype(&TESObjectREFR::SetLocationOnReference);
+			REL::Relocation<func_t> func{ REL::ID(2201138) };
+			return func(this, a_point);
+		}
+
+		void SetWantsDelete(bool a_delete)
+		{
+			using func_t = decltype(&TESObjectREFR::SetWantsDelete);
+			REL::Relocation<func_t> func{ REL::ID(2201199) };
+			return func(this, a_delete);
+		}
+
+		void RebuildBendableSpline(bool rebuildCollision, NiAVObject* target)
+		{
+			using func_t = decltype(&TESObjectREFR::RebuildBendableSpline);
+			REL::Relocation<func_t> func{ REL::ID(2201119) };
+			return func(this, rebuildCollision, target);
+		}
+
+		bool GetItemCount(uint32_t& count, TESForm* item, bool countComponent)
+		{
+			using func_t = decltype(&TESObjectREFR::GetItemCount);
+			REL::Relocation<func_t> func{ REL::ID(2200996) };
+			return func(this, count, item, countComponent);
+		}
+
+		void UpdateReference3D()
+		{
+			using func_t = decltype(&TESObjectREFR::UpdateReference3D);
+			REL::Relocation<func_t> func{ REL::ID(2201071) };
+			return func(this);
+		}
+
+		void GetObjectCenter(NiPoint3& center)
+		{
+			using func_t = decltype(&TESObjectREFR::GetObjectCenter);
+			REL::Relocation<func_t> func{ REL::ID(2201092) };
+			return func(this, center);
+		}
+
+		void SetScale(float scale)
+		{
+			using func_t = decltype(&TESObjectREFR::SetScale);
+			REL::Relocation<func_t> func{ REL::ID(2200893) };
+			return func(this, scale);
+		}
+
+		void UpdateDynamicNavmesh(bool a_active)
+		{
+			using func_t = decltype(&RE::TESObjectREFR::UpdateDynamicNavmesh);
+			REL::Relocation<func_t> func{ REL::ID(2201206) };
+			return func(this, a_active);
 		}
 
 		// members

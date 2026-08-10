@@ -12,6 +12,8 @@
 namespace RE::Scaleform::GFx
 {
 	class ASMovieRootBase;
+	class InteractiveObject;
+	class EventId;
 	class FunctionHandler;
 	class MemoryContext;
 	class Movie;
@@ -32,7 +34,7 @@ namespace RE::Scaleform::GFx
 	};
 	static_assert(sizeof(Viewport) == 0x34);
 
-	class __declspec(novtable) MemoryContext :
+	class __declspec(novtable) alignas(0x08) MemoryContext :
 		public RefCountBase<MemoryContext, 2>  // 00
 	{
 	public:
@@ -309,7 +311,7 @@ namespace RE::Scaleform::GFx
 
 			void ObjectAddRef(Value* a_val, void* a_obj)
 			{
-				using func_t = decltype(&ObjectInterface::ObjectRelease);
+				using func_t = decltype(&ObjectInterface::ObjectAddRef);
 				REL::Relocation<func_t> func{ REL::ID(2286228) };
 				return func(this, a_val, a_obj);
 			}
@@ -549,6 +551,9 @@ namespace RE::Scaleform::GFx
 		[[nodiscard]] bool IsDisplayObject() const noexcept { return GetType() == ValueType::kDisplayObject; }
 		[[nodiscard]] bool IsInt() const noexcept { return GetType() == ValueType::kInt; }
 		[[nodiscard]] bool IsNumber() const noexcept { return GetType() == ValueType::kNumber; }
+		[[nodiscard]] bool IsString() const noexcept { return GetType() == ValueType::kString; }
+		[[nodiscard]] bool IsUndefined() const noexcept { return GetType() == ValueType::kUndefined; }
+		[[nodiscard]] bool IsUInt() const noexcept { return GetType() == ValueType::kUInt; }
 
 		[[nodiscard]] bool IsObject() const noexcept
 		{
@@ -562,9 +567,17 @@ namespace RE::Scaleform::GFx
 			}
 		}
 
-		[[nodiscard]] bool IsString() const noexcept { return GetType() == ValueType::kString; }
-		[[nodiscard]] bool IsUndefined() const noexcept { return GetType() == ValueType::kUndefined; }
-		[[nodiscard]] bool IsUInt() const noexcept { return GetType() == ValueType::kUInt; }
+		[[nodiscard]] bool GetBoolean() const
+		{
+			assert(IsBoolean());
+			return _value.boolean;
+		}
+
+		[[nodiscard]] std::int32_t GetInt() const
+		{
+			assert(IsInt());
+			return _value.int32;
+		}
 
 		[[nodiscard]] double GetNumber() const
 		{
@@ -572,12 +585,16 @@ namespace RE::Scaleform::GFx
 			return _value.number;
 		}
 
-		[[nodiscard]] std::string_view GetString() const
+		[[nodiscard]] const char* GetString() const
 		{
 			assert(IsString());
-			return IsManagedValue() ?
-			           *_value.mstring :
-			           _value.string;
+			return IsManagedValue() ? *_value.mstring : _value.string;
+		}
+
+		[[nodiscard]] std::uint32_t GetUInt() const
+		{
+			assert(IsUInt());
+			return _value.uint32;
 		}
 
 		bool HasMember(stl::zstring a_name) const
@@ -615,6 +632,12 @@ namespace RE::Scaleform::GFx
 			return _objectInterface->PushBack(_value.data, a_val);
 		}
 
+		[[nodiscard]] Movie* GetMovie() const
+		{
+			assert(_objectInterface && _objectInterface->movieRoot);
+			return reinterpret_cast<Movie*>(_objectInterface->movieRoot);
+		}
+
 	private:
 		void AcquireManagedValue(const Value& a_rhs)
 		{
@@ -645,7 +668,7 @@ namespace RE::Scaleform::GFx
 	};
 	static_assert(sizeof(Value) == 0x20);
 
-	class __declspec(novtable) FunctionHandler :
+	class __declspec(novtable) alignas(0x08) FunctionHandler :
 		public RefCountBase<FunctionHandler, 2>  // 00
 	{
 	public:
@@ -821,7 +844,9 @@ namespace RE::Scaleform::GFx
 		virtual void MakeAreaVisible(const Render::RectF& a_screenRect, const Render::RectF& a_box, MakeAllVisibleFlags a_flags = MakeAllVisibleFlags::kNone) = 0;       // 42
 		virtual void RestoreViewport() = 0;                                                                                                                              // 43
 
+		void CreateArray(Value* a_value);
 		void CreateFunction(Value* a_value, FunctionHandler* a_function, void* a_userData = nullptr);
+		void CreateObject(Value* a_value, const char* a_className = nullptr, const GFx::Value* a_args = nullptr, std::uint32_t a_numArgs = 0);
 		bool GetVariable(Value* a_val, const char* a_pathToVar) const;
 
 		void Release()
@@ -835,4 +860,34 @@ namespace RE::Scaleform::GFx
 		Ptr<ASMovieRootBase> asMovieRoot;  // 18
 	};
 	static_assert(sizeof(Movie) == 0x20);
+
+	class __declspec(novtable) MovieImpl :
+		public Movie  // 00
+	{
+	public:
+		// members
+		std::byte pad[0x3140 - 0x20];  // 20
+	};
+	static_assert(sizeof(MovieImpl) == 0x3140);
+
+	class __declspec(novtable) alignas(0x08) KeyboardState :
+		public RefCountBase<KeyboardState, 2>  // 00
+	{
+	public:
+		class __declspec(novtable) IListener
+		{
+		public:
+			virtual ~IListener();  // 00
+
+			// add
+			virtual void OnKeyDown(InteractiveObject* a_movie, const EventId& a_eventID, std::int32_t a_keyMask) = 0;  // 01
+			virtual void OnKeyUp(InteractiveObject* a_movie, const EventId& a_eventID, std::int32_t a_keyMask) = 0;    // 02
+			virtual void Update(const EventId& a_eventID) = 0;                                                         // 03
+		};
+		static_assert(sizeof(IListener) == 0x08);
+
+		// members
+		std::byte pad[0x688 - 0x10];  // 10 - TODO
+	};
+	static_assert(sizeof(KeyboardState) == 0x688);
 }

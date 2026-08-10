@@ -2,6 +2,11 @@
 
 namespace RE
 {
+	namespace InventoryInterface
+	{
+		struct Handle;
+	}
+
 	namespace detail
 	{
 		[[nodiscard]] constexpr std::uint32_t GenerateCRC32(std::span<const std::uint8_t> a_data) noexcept
@@ -84,6 +89,13 @@ namespace RE
 		{
 			return BSCRC32<std::uintptr_t>()(0);
 		}
+	};
+
+	template <>
+	struct BSCRC32<InventoryInterface::Handle>
+	{
+	public:
+		[[nodiscard]] std::uint32_t operator()(InventoryInterface::Handle a_data) const noexcept;
 	};
 
 	template <class CharT>

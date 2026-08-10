@@ -4,6 +4,20 @@ namespace RE
 {
 	namespace SendHUDMessage
 	{
+		inline void PopHUDMode(const HUDModeType& a_hudMode)
+		{
+			using func_t = decltype(&PopHUDMode);
+			REL::Relocation<func_t> func{ REL::ID(2222444) };
+			return func(a_hudMode);
+		}
+
+		inline void PushHUDMode(const HUDModeType& a_hudMode)
+		{
+			using func_t = decltype(&SendHUDMessage::PushHUDMode);
+			REL::Relocation<func_t> func{ REL::ID(2222443) };
+			return func(a_hudMode);
+		}
+
 		inline void ShowHUDMessage(const char* a_message, const char* a_sound, bool a_throttle, bool a_warning)
 		{
 			using func_t = decltype(&ShowHUDMessage);

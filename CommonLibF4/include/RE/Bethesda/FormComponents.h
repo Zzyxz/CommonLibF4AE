@@ -69,7 +69,12 @@ namespace RE
 		class Items;
 	}
 
-	enum class ACTOR_VALUE_MODIFIER;
+	enum class ACTOR_VALUE_MODIFIER
+	{
+		Perm,
+		Temp,
+		Damage
+	};
 	enum class ENUM_FORM_ID;
 	enum class IO_TASK_PRIORITY;
 
@@ -114,6 +119,7 @@ namespace RE
 	class TESObjectREFR;
 	class TESPackage;
 	class TESRace;
+	class TESRegion;
 	class TESShout;
 
 	namespace BSISoundCategoryUtils
@@ -580,12 +586,30 @@ namespace RE
 	namespace detail
 	{
 		[[nodiscard]] BGSKeyword* BGSKeywordGetTypedKeywordByIndex(KeywordType a_type, std::uint16_t a_index);
+		[[nodiscard]] uint16_t BGSKeywordGetIndexForTypedKeyword(BGSKeyword* a_keyword, KeywordType a_type);
 	}
 
 	template <KeywordType TYPE>
 	class BGSTypedKeywordValueArray
 	{
 	public:
+		void AddKeyword(RE::BGSKeyword* a_keyword)
+		{
+			if (a_keyword && !HasKeyword(a_keyword)) {
+				MemoryManager& mm = MemoryManager::GetSingleton();
+				BGSTypedKeywordValue<TYPE>* newArray = (BGSTypedKeywordValue<TYPE>*)mm.Allocate(2 * (size + 1), 0, false);
+				for (int i = 0; i < size; ++i) {
+					newArray[i] = array[i];
+				}
+				BGSTypedKeywordValue<TYPE> newValue;
+				newValue.keywordIndex = detail::BGSKeywordGetIndexForTypedKeyword(a_keyword, RE::BGSKeyword::KeywordType::kAttachPoint);
+				newArray[size] = newValue;
+				mm.Deallocate(array, false);
+				array = newArray;
+				++size;
+			}
+		}
+
 		[[nodiscard]] bool HasKeyword(RE::BGSKeyword* a_keyword)
 		{
 			for (std::uint32_t i = 0; i < size; ++i) {
@@ -616,6 +640,13 @@ namespace RE
 		void ClearDataComponent() override;                                     // 03
 		void CopyComponent(BaseFormComponent*) override { return; }             // 06
 		void CopyComponent(BaseFormComponent*, TESForm*) override;              // 05
+
+		void SetParentGroupNumber(BGSKeyword* keyword, uint32_t i)
+		{
+			using func_t = decltype(&RE::BGSAttachParentArray::SetParentGroupNumber);
+			REL::Relocation<func_t> func{ REL::ID(2189125) };
+			return func(this, keyword, i);
+		}
 	};
 	static_assert(sizeof(BGSAttachParentArray) == 0x18);
 
@@ -680,8 +711,45 @@ namespace RE
 	struct __declspec(novtable) BIPED_MODEL
 	{
 	public:
+		enum class BipedObjectSlot
+		{
+			kNone = 0,
+			kHairTop = 1 << 0,
+			kHairlong = 1 << 1,
+			kBodyFaceGenHead = 1 << 2,
+			kBody = 1 << 3,
+			kLleftHand = 1 << 4,
+			kRightHand = 1 << 5,
+			kUTorso = 1 << 6,
+			kULeftArm = 1 << 7,
+			kURrightArm = 1 << 8,
+			kULeftLeg = 1 << 9,
+			kURirghtLeg = 1 << 10,
+			kATorso = 1 << 11,
+			kALeftArm = 1 << 12,
+			kARrightArm = 1 << 13,
+			kALeftLeg = 1 << 14,
+			kARightLeg = 1 << 15,
+			kHeadband = 1 << 16,
+			kEyes = 1 << 17,
+			kBeard = 1 << 18,
+			kMouth = 1 << 19,
+			kNeck = 1 << 20,
+			kRing = 1 << 21,
+			kScalp = 1 << 22,
+			kDecapitation = 1 << 23,
+			kUnnamed1 = 1 << 24,
+			kUnnamed2 = 1 << 25,
+			kUnnamed3 = 1 << 26,
+			kUnnamed4 = 1 << 27,
+			kUnnamed5 = 1 << 28,
+			kShield = 1 << 29,
+			kPipboy = 1 << 30,
+			kFX01 = 1 << 31
+		};
+
 		// members
-		std::uint32_t bipedObjectSlots;  // 0
+		stl::enumeration<BipedObjectSlot, std::uint32_t> bipedObjectSlots;  // 0
 	};
 	static_assert(sizeof(BIPED_MODEL) == 0x4);
 
@@ -692,7 +760,7 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::BGSBipedObjectForm };
 		static constexpr auto VTABLE{ VTABLE::BGSBipedObjectForm };
 
-		[[nodiscard]] std::uint32_t GetFilledSlots() const noexcept { return bipedModelData.bipedObjectSlots; }
+		[[nodiscard]] stl::enumeration<RE::BIPED_MODEL::BipedObjectSlot, std::uint32_t> GetFilledSlots() const noexcept { return bipedModelData.bipedObjectSlots; }
 
 		// members
 		BIPED_MODEL bipedModelData;  // 08
@@ -842,7 +910,7 @@ namespace RE
 		virtual ~IKeywordFormBase() = default;  // 00
 
 		// add
-		virtual bool HasKeyword(const BGSKeyword* a_keyword, const TBO_InstanceData* a_data) const = 0;                             // 01
+		virtual bool HasKeyword(const BGSKeyword* a_keyword, const TBO_InstanceData* a_data = nullptr) const = 0;                   // 01
 		virtual void CollectAllKeywords(BSScrapArray<const BGSKeyword*>& a_outKeywords, const TBO_InstanceData* a_data) const = 0;  // 02
 	};
 	static_assert(sizeof(IKeywordFormBase) == 0x8);
@@ -862,11 +930,52 @@ namespace RE
 		void CopyComponent(BaseFormComponent*) override;     // 06
 
 		// override (IKeywordFormBase)
-		bool HasKeyword(const BGSKeyword*, const TBO_InstanceData*) const override;                         // 01
-		void CollectAllKeywords(BSScrapArray<const BGSKeyword*>&, const TBO_InstanceData*) const override;  // 02
+		bool HasKeyword(const BGSKeyword* a_keyword, const TBO_InstanceData* a_data = nullptr) const override;  // 01
+		void CollectAllKeywords(BSScrapArray<const BGSKeyword*>&, const TBO_InstanceData*) const override;      // 02
 
 		// add
 		virtual BGSKeyword* GetDefaultKeyword() const { return nullptr; }  // 07
+
+		void AddKeyword(BGSKeyword* a_keyword)
+		{
+			using func_t = decltype(&BGSKeywordForm::AddKeyword);
+			REL::Relocation<func_t> func{ REL::ID(2192766) };
+			return func(this, a_keyword);
+		}
+
+		[[nodiscard]] bool ContainsKeywordString(std::string_view a_editorID) const;
+		[[nodiscard]] bool HasKeywordID(std::uint32_t a_formID) const;
+		[[nodiscard]] bool HasKeywordString(std::string_view a_editorID) const;
+
+		[[nodiscard]] std::optional<BGSKeyword*> GetKeywordAt(std::uint32_t a_idx) const
+		{
+			if (a_idx < numKeywords) {
+				return std::make_optional(keywords[a_idx]);
+			} else {
+				return std::nullopt;
+			}
+		}
+
+		[[nodiscard]] std::optional<std::uint32_t> GetKeywordIndex(BGSKeyword* a_keyword) const
+		{
+			if (keywords) {
+				for (std::uint32_t i = 0; i < numKeywords; ++i) {
+					if (keywords[i] == a_keyword) {
+						return i;
+					}
+				}
+			}
+			return std::nullopt;
+		}
+
+		[[nodiscard]] std::uint32_t GetNumKeywords() const { return numKeywords; };
+
+		void RemoveKeyword(BGSKeyword* kwd)
+		{
+			using func_t = decltype(&RE::BGSKeywordForm::RemoveKeyword);
+			REL::Relocation<func_t> func{ REL::ID(2192767) };
+			return func(this, kwd);
+		}
 
 		// members
 		BGSKeyword** keywords;      // 10
@@ -938,6 +1047,12 @@ namespace RE
 	struct PerkRankData
 	{
 	public:
+		PerkRankData(BGSPerk* a_perk, std::int8_t a_rank) :
+			perk(a_perk), currentRank(a_rank)
+		{}
+
+		F4_HEAP_REDEFINE_NEW(PerkRankData);
+
 		// members
 		BGSPerk* perk;            // 00
 		std::int8_t currentRank;  // 08
@@ -950,6 +1065,31 @@ namespace RE
 	public:
 		static constexpr auto RTTI{ RTTI::BGSPerkRankArray };
 		static constexpr auto VTABLE{ VTABLE::BGSPerkRankArray };
+
+		virtual ~BGSPerkRankArray()  // 00
+		{
+			ClearPerks(false);
+		}
+
+		// override
+		virtual void InitializeDataComponent() override;                 // 02
+		virtual void ClearDataComponent() override;                      // 03
+		virtual void InitComponent() override;                           // 04
+		virtual void CopyComponent(BaseFormComponent* a_copy) override;  // 06
+
+		void AllocatePerkRankArray(std::uint32_t a_count)
+		{
+			using func_t = decltype(&BGSPerkRankArray::AllocatePerkRankArray);
+			REL::Relocation<func_t> func{ REL::ID(2192837) };
+			return func(this, a_count);
+		}
+
+		void ClearPerks(bool a_removeFormUser)
+		{
+			using func_t = decltype(&BGSPerkRankArray::ClearPerks);
+			REL::Relocation<func_t> func{ REL::ID(2192836) };
+			return func(this, a_removeFormUser);
+		}
 
 		// members
 		PerkRankData* perks;      // 08
@@ -1046,21 +1186,58 @@ namespace RE
 	class ContainerItemExtra
 	{
 	public:
-		// members
-		TESForm* ownerForm;  // 00
-		union
+		union Conditional
 		{
+			Conditional() :
+				ownerGlobal(nullptr)
+			{}
+			~Conditional() = default;
+
+			F4_HEAP_REDEFINE_NEW(Conditional);
+
 			TESGlobal* ownerGlobal;
 			std::int32_t ownerRank;
 			void* u;
-		};                 // 08
-		float healthMult;  // 10
+		};
+		static_assert(sizeof(Conditional) == 0x8);
+
+		ContainerItemExtra() :
+			ownerForm(nullptr),
+			conditional(),
+			healthMult(100.0f)
+		{}
+		ContainerItemExtra(TESForm* a_owner) :
+			ownerForm(a_owner),
+			conditional(),
+			healthMult(100.0f)
+		{}
+
+		F4_HEAP_REDEFINE_NEW(ContainerItemExtra);
+
+		// members
+		TESForm* ownerForm;       // 00
+		Conditional conditional;  // 08
+		float healthMult;         // 10
 	};
 	static_assert(sizeof(ContainerItemExtra) == 0x18);
 
 	class ContainerObject
 	{
 	public:
+		ContainerObject(TESBoundObject* a_obj, std::int32_t a_count) :
+			count(a_count),
+			obj(a_obj),
+			itemExtra()
+		{}
+		ContainerObject(TESBoundObject* a_obj, std::int32_t a_count, TESForm* a_ownerForm) :
+			count(a_count),
+			obj(a_obj),
+			itemExtra(new ContainerItemExtra(a_ownerForm))
+		{}
+		~ContainerObject() = default;
+
+		F4_HEAP_REDEFINE_NEW(ContainerObject);
+
 		// members
 		std::int32_t count;             // 00
 		TESBoundObject* obj;            // 08
@@ -1074,6 +1251,48 @@ namespace RE
 	public:
 		static constexpr auto RTTI{ RTTI::TESContainer };
 		static constexpr auto VTABLE{ VTABLE::TESContainer };
+
+		void ForEachContainerObject(std::function<bool(ContainerObject&)> a_fn) const
+		{
+			for (std::uint32_t i = 0; i < numContainerObjects; ++i) {
+				auto entry = containerObjects[i];
+				if (entry) {
+					if (!a_fn(*entry)) {
+						break;
+					}
+				}
+			}
+		}
+
+		bool AddObject(TESBoundObject* a_object, std::int32_t a_count, TESForm* a_owner)
+		{
+			bool added = false;
+			for (std::uint32_t i = 0; i < numContainerObjects; ++i) {
+				if (const auto entry = containerObjects[i]; entry && entry->obj == a_object) {
+					entry->count += a_count;
+					added = true;
+					break;
+				}
+			}
+			if (!added) {
+				std::vector<ContainerObject*> copiedData{ containerObjects, containerObjects + numContainerObjects };
+				const auto newObj = new ContainerObject(a_object, a_count, a_owner);
+				copiedData.push_back(newObj);
+
+				const auto oldData = containerObjects;
+
+				const auto newSize = copiedData.size();
+				const auto newData = calloc<ContainerObject*>(newSize);
+				std::ranges::copy(copiedData, newData);
+
+				numContainerObjects = static_cast<std::uint32_t>(newSize);
+				containerObjects = newData;
+				free(oldData);
+
+				return true;
+			}
+			return added;
+		}
 
 		// members
 		ContainerObject** containerObjects;  // 08
@@ -1120,6 +1339,13 @@ namespace RE
 		void ClearDataComponent() override { return; }    // 03
 		void CopyComponent(BaseFormComponent*) override;  // 06
 
+		void GetDescription(BSStringT<char>& a_outString, const TESForm* a_form = nullptr)
+		{
+			using func_t = decltype(&TESDescription::GetDescription);
+			REL::Relocation<func_t> func{ REL::ID(2193019) };
+			return func(this, a_outString, a_form);
+		}
+
 		// members
 		std::uint32_t fileOffset;              // 08
 		std::uint32_t chunkOffset;             // 0C
@@ -1155,6 +1381,8 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::TESFullName };
 		static constexpr auto VTABLE{ VTABLE::TESFullName };
 
+
+
 		// add
 		virtual std::uint32_t GetFullNameLength() const { return fullName.length(); }  // 07
 		virtual const char* GetFullName() const { return fullName.c_str(); }           // 08
@@ -1168,12 +1396,43 @@ namespace RE
 			return *sparseFullNameMap;
 		}
 
+		void SetFullNameENG(const char* a_fullName)
+		{
+			using func_t = void (TESFullName::*)(const char*);
+			REL::Relocation<func_t> func{ REL::ID(2204298) };
+			return func(this, a_fullName);
+		}
+
 		static void SetFullName(TESForm& a_form, std::string_view a_fullName);
 
 		// members
 		BGSLocalizedString fullName;  // 08
 	};
 	static_assert(sizeof(TESFullName) == 0x10);
+
+	class __declspec(novtable) TESHealthForm :
+		public BaseFormComponent  // 00
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::TESHealthForm };
+		static constexpr auto VTABLE{ VTABLE::TESHealthForm };
+
+		// override (BaseFormComponent)
+		void InitializeDataComponent() override;          // 02
+		void ClearDataComponent() override;               // 03
+		void CopyComponent(BaseFormComponent*) override;  // 06
+
+		[[nodiscard]] static std::uint32_t GetFormHealth(const TESForm* a_form, const TBO_InstanceData* a_data)
+		{
+			using func_t = decltype(&TESHealthForm::GetFormHealth);
+			REL::Relocation<func_t> func{ REL::ID(2193227) };
+			return func(a_form, a_data);
+		}
+
+		// members
+		std::uint32_t health;  // 08
+	};
+	static_assert(sizeof(TESHealthForm) == 0x10);
 
 	class __declspec(novtable) TESModel :
 		public BaseFormComponent  // 00
@@ -1248,15 +1507,57 @@ namespace RE
 	struct ACTOR_BASE_DATA
 	{
 	public:
+		enum class Flag
+		{
+			kNone = 0,
+			kFemale = 1 << 0,
+			kEssential = 1 << 1,
+			kIsChargenFacePreset = 1 << 2,
+			kRespawn = 1 << 3,
+			kAutoCalcStats = 1 << 4,
+			kUnique = 1 << 5,
+			kDoesntAffectStealthMeter = 1 << 6,
+			kPCLevelMult = 1 << 7,
+			kUsesTemplate = 1 << 8,
+			kProtected = 1 << 11,
+			kSummonable = 1 << 14,
+			kDoesntBleed = 1 << 16,
+			kBleedoutOverride = 1 << 18,
+			kOppositeGenderanims = 1 << 19,
+			kSimpleActor = 1 << 20,
+			kLoopedScript = 1 << 21,  // ?
+			kLoopedAudio = 1 << 28,   // ?
+			kIsGhost = 1 << 29,
+			kInvulnerable = 1 << 31
+		};
+
+		enum class TEMPLATE_USE_FLAG
+		{
+			kNone = 0,
+			kTraits = 1 << 0,
+			kStats = 1 << 1,
+			kFactions = 1 << 2,
+			kSpells = 1 << 3,
+			kAIData = 1 << 4,
+			kAIPackages = 1 << 5,
+			kUnused = 1 << 6,
+			kBaseData = 1 << 7,
+			kInventory = 1 << 8,
+			kScript = 1 << 9,
+			kAIDefPackList = 1 << 10,
+			kAttackData = 1 << 11,
+			kKeywords = 1 << 12
+		};
+
 		// members
-		std::uint32_t actorBaseFlags;    // 00
-		std::int16_t xpValueOffset;      // 04
-		std::uint16_t level;             // 06
-		std::uint16_t calcLevelMin;      // 08
-		std::uint16_t calcLevelMax;      // 0A
-		std::uint16_t baseDisposition;   // 0C
-		std::uint16_t templateUseFlags;  // 0E
-		std::int16_t bleedoutOverride;   // 10
+		stl::enumeration<Flag, std::uint32_t> actorBaseFlags;                 // 00
+		std::int16_t xpValueOffset;                                           // 04
+		std::uint16_t level;                                                  // 06
+		std::uint16_t calcLevelMin;                                           // 08
+		std::uint16_t calcLevelMax;                                           // 0A
+		std::uint16_t baseDisposition;                                        // 0C
+		stl::enumeration<TEMPLATE_USE_FLAG, std::uint16_t> templateUseFlags;  // 0E
+		std::int16_t bleedoutOverride;                                        // 10
 	};
 	static_assert(sizeof(ACTOR_BASE_DATA) == 0x14);
 
@@ -1280,6 +1581,24 @@ namespace RE
 		virtual void CopyFromTemplateForms([[maybe_unused]] TESActorBase** a_forceTemplates) { return; }  // 07
 		virtual bool GetIsGhost() const;                                                                  // 08
 		virtual bool GetInvulnerable() const;                                                             // 09
+
+		[[nodiscard]] constexpr bool AffectsStealthMeter() const noexcept { return actorData.actorBaseFlags.none(ACTOR_BASE_DATA::Flag::kDoesntAffectStealthMeter); }
+		[[nodiscard]] constexpr bool Bleeds() const noexcept { return actorData.actorBaseFlags.none(ACTOR_BASE_DATA::Flag::kDoesntBleed); }
+		[[nodiscard]] constexpr bool IsEssential() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kEssential); }
+		[[nodiscard]] constexpr bool IsFemale() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kFemale); }
+		[[nodiscard]] inline bool IsGhost() const { return GetIsGhost(); }
+		[[nodiscard]] constexpr bool IsPreset() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kIsChargenFacePreset); }
+		[[nodiscard]] constexpr bool IsProtected() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kProtected); }
+		[[nodiscard]] constexpr bool IsSimpleActor() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kSimpleActor); }
+		[[nodiscard]] constexpr bool IsSummonable() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kSummonable); }
+		[[nodiscard]] constexpr bool IsUnique() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kUnique); }
+		[[nodiscard]] inline bool IsInvulnerable() const { return GetInvulnerable(); }
+		[[nodiscard]] constexpr bool HasAutoCalcStats() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kAutoCalcStats); }
+		[[nodiscard]] constexpr bool HasBleedoutOverride() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kBleedoutOverride); }
+		[[nodiscard]] constexpr bool HasPCLevelMult() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kPCLevelMult); }
+		[[nodiscard]] constexpr bool Respawns() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kRespawn); }
+		[[nodiscard]] constexpr bool UsesOppositeGenderAnims() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kOppositeGenderanims); }
+		[[nodiscard]] constexpr bool UsesTemplate() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kUsesTemplate); }
 
 		// members
 		ACTOR_BASE_DATA actorData;        // 08
@@ -1384,6 +1703,27 @@ namespace RE
 		virtual const char* GetOverrideName() { return nullptr; }              // 0A
 		virtual bool GetCanContainFormsOfType(ENUM_FORM_ID a_type) const = 0;  // 0B
 
+		LEVELED_OBJECT* AddLeveledObject(uint16_t a_level, uint16_t a_count, int8_t a_chanceNone, TESForm* a_item, ContainerItemExtra* a_itemExtra)
+		{
+			using func_t = decltype(&TESLeveledList::AddLeveledObject);
+			REL::Relocation<func_t> func{ REL::ID(2193258) };
+			return func(this, a_level, a_count, a_chanceNone, a_item, a_itemExtra);
+		}
+
+		bool GetUseAll()
+		{
+			using func_t = decltype(&TESLeveledList::GetUseAll);
+			REL::Relocation<func_t> func{ REL::ID(2193253) };
+			return func(this);
+		}
+
+		void RemoveAllScriptAddedLeveledObjects()
+		{
+			using func_t = decltype(&TESLeveledList::RemoveAllScriptAddedLeveledObjects);
+			REL::Relocation<func_t> func{ REL::ID(2193268) };
+			return func(this);
+		}
+
 		// members
 		TESGlobal* chanceGlobal;                                                         // 08
 		BSTArray<BSTTuple<TESForm*, BGSTypedFormValuePair::SharedVal>>* keywordChances;  // 10
@@ -1465,6 +1805,23 @@ namespace RE
 	};
 	static_assert(sizeof(TESReactionForm) == 0x20);
 
+	struct __declspec(novtable) TESRegionList :
+		public BSSimpleList<TESRegion*>
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::TESRegionList };
+		static constexpr auto VTABLE{ VTABLE::TESRegionList };
+
+		virtual ~TESRegionList();  // 00
+
+		// members
+		bool ownsRegionMemory;  // 18
+		std::uint8_t pad19;     // 19
+		std::uint16_t pad1A;    // 1A
+		std::uint32_t pad1C;    // 1C
+	};
+	static_assert(sizeof(TESRegionList) == 0x20);
+
 	class __declspec(novtable) TESSpellList :
 		public BaseFormComponent  // 00
 	{
@@ -1475,6 +1832,18 @@ namespace RE
 		struct SpellData
 		{
 		public:
+			SpellData() :
+				spells(nullptr),
+				levSpells(nullptr),
+				shouts(nullptr),
+				numSpells(0),
+				numLevSpells(0),
+				numShouts(0)
+			{}
+			~SpellData() = default;
+
+			F4_HEAP_REDEFINE_NEW(SpellData);
+
 			// members
 			SpellItem** spells;          // 00
 			TESLevSpell** levSpells;     // 08
@@ -1484,6 +1853,13 @@ namespace RE
 			std::uint32_t numShouts;     // 20
 		};
 		static_assert(sizeof(SpellData) == 0x28);
+
+		bool AddSpell(TESForm* a_spell)
+		{
+			using func_t = decltype(&TESSpellList::AddSpell);
+			REL::Relocation<func_t> func{ REL::ID(2193395) };
+			return func(this, a_spell);
+		}
 
 		// members
 		SpellData* spellData;  // 08
@@ -1509,6 +1885,14 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::TESValueForm };
 		static constexpr auto VTABLE{ VTABLE::TESValueForm };
 
+		[[nodiscard]] static std::uint32_t GetFormValue(const TESForm* a_form, const TBO_InstanceData* a_data)
+		{
+			using func_t = std::int32_t (*)(const TESForm*, const TBO_InstanceData*);
+			REL::Relocation<func_t> func{ REL::ID(2193435) };
+			return func(a_form, a_data);
+		}
+
+		[[nodiscard]] std::int32_t GetFormValue() const noexcept { return value; }
 		static void SetFormValue(TESForm& a_form, std::int32_t a_value);
 
 		// members
@@ -1522,6 +1906,13 @@ namespace RE
 	public:
 		static constexpr auto RTTI{ RTTI::TESWeightForm };
 		static constexpr auto VTABLE{ VTABLE::TESWeightForm };
+
+		[[nodiscard]] static float GetFormWeight(const TESForm* a_form, const TBO_InstanceData* a_data)
+		{
+			using func_t = float (*)(const TESForm*, const TBO_InstanceData*);
+			REL::Relocation<func_t> func{ REL::ID(2193446) };
+			return func(a_form, a_data);
+		}
 
 		[[nodiscard]] float GetFormWeight() const noexcept { return weight; }
 		void SetFormWeight(float a_weight) noexcept { weight = a_weight; }

@@ -40,6 +40,48 @@ namespace RE
 			kNone
 		};
 
+		Setting(const char* a_key, char a_value)
+		{
+			_key = a_key;
+			_value.c = a_value;
+		}
+
+		Setting(const char* a_key, bool a_value)
+		{
+			_key = a_key;
+			_value.b = a_value;
+		}
+
+		Setting(const char* a_key, float a_value)
+		{
+			_key = a_key;
+			_value.f = a_value;
+		}
+
+		Setting(const char* a_key, std::uint8_t a_value)
+		{
+			_key = a_key;
+			_value.h = a_value;
+		}
+
+		Setting(const char* a_key, std::int32_t a_value)
+		{
+			_key = a_key;
+			_value.i = a_value;
+		}
+
+		Setting(const char* a_key, const char* a_value)
+		{
+			_key = a_key;
+			_value.s = _strdup(a_value);
+		}
+
+		Setting(const char* a_key, std::uint32_t a_value)
+		{
+			_key = a_key;
+			_value.u = a_value;
+		}
+
 		virtual ~Setting()  // 00
 		{
 			if (_key && _key[0] == 'S') {
@@ -294,6 +336,13 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::GameSettingCollection };
 		static constexpr auto VTABLE{ VTABLE::GameSettingCollection };
 
+		[[nodiscard]] static void InitCollection()
+		{
+			using func_t = decltype(&GameSettingCollection::InitCollection);
+			REL::Relocation<func_t> func{ REL::ID(2188690) };
+			return func();
+		}
+
 		[[nodiscard]] static GameSettingCollection* GetSingleton()
 		{
 			REL::Relocation<GameSettingCollection**> singleton{ REL::ID(4797590) };
@@ -313,6 +362,16 @@ namespace RE
 		{
 			REL::Relocation<INISettingCollection**> singleton{ REL::ID(2704108) };
 			return *singleton;
+		}
+
+		[[nodiscard]] Setting* GetSetting(std::string_view a_name)
+		{
+			for (auto& setting : settings) {
+				if (setting->GetKey() == a_name) {
+					return setting;
+				}
+			}
+			return nullptr;
 		}
 	};
 	static_assert(sizeof(INISettingCollection) == 0x128);

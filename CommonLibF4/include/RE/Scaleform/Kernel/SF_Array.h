@@ -58,4 +58,26 @@ namespace RE::Scaleform
 	{
 	public:
 	};
+
+	template <class T, std::int32_t STAT1 = 0, std::int32_t STAT2 = 0, class Alloc = AllocatorPagedCC<T, 0>>
+	class ArrayPagedBase :
+		public Alloc
+	{
+	public:
+		// members
+		std::uint64_t size;      // 08
+		std::uint64_t numPages;  // 10
+		std::uint64_t maxPages;  // 18
+		T** pages;               // 20
+	};
+	static_assert(sizeof(ArrayPagedBase<void*>) == 0x28);
+
+	template <class T, std::int32_t STAT1 = 0, std::int32_t STAT2 = 0, std::int32_t STAT3 = 0>
+	class ArrayPagedCC :
+		public ArrayPagedBase<T, STAT1, STAT2, AllocatorPagedCC<T, STAT3>>
+	{
+	public:
+		T defaultValue;  // 28
+	};
+	static_assert(sizeof(ArrayPagedCC<void*>) == 0x30);
 }

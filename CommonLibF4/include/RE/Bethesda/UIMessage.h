@@ -77,6 +77,20 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::BSUIMessageData };
 		static constexpr auto VTABLE{ VTABLE::BSUIMessageData };
 
+		static void SendUIBoolMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, bool a_value)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIBoolMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284981) };
+			return func(a_menuName, a_type, a_value);
+		}
+
+		static void SendUIPtrMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, void* a_data)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIPtrMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284982) };
+			return func(a_menuName, a_type, a_data);
+		}
+
 		static void SendUIStringUIntMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, std::uint32_t a_data)
 		{
 			using func_t = decltype(&BSUIMessageData::SendUIStringUIntMessage);

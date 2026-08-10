@@ -3,6 +3,7 @@
 #include "RE/Bethesda/BSLock.h"
 #include "RE/Bethesda/BSTArray.h"
 #include "RE/Bethesda/BSTOptional.h"
+#include "RE/Bethesda/BSTSingleton.h"
 
 namespace RE
 {
@@ -24,7 +25,7 @@ namespace RE
 		// add
 		virtual BSEventNotifyControl ProcessEvent(const Event& a_event, BSTEventSource<Event>* a_source) = 0;  // 01
 	};
-	//static_assert(sizeof(BSTEventSink<void*>) == 0x8);
+	static_assert(sizeof(BSTEventSink<void*>) == 0x8);
 
 	template <class Event>
 	class BSTEventSource
@@ -123,7 +124,7 @@ namespace RE
 		BSTArray<BSTEventSink<event_type>*> _pendingUnregisters;  // 38
 		std::int8_t _notifying{ 0 };                              // 50
 	};
-	//static_assert(sizeof(BSTEventSource<void*>) == 0x58);
+	static_assert(sizeof(BSTEventSource<void*>) == 0x58);
 
 	template <class T>
 	class BSTValueEvent
@@ -149,7 +150,7 @@ namespace RE
 		};
 
 		// override (BSTEventSink<T>)
-		BSEventNotifyControl ProcessEvent(const T& a_event, BSTEventSource<T>*) override;  // 01
+		virtual BSEventNotifyControl ProcessEvent([[maybe_unused]] const T& a_event, BSTEventSource<T>*) override { return BSEventNotifyControl::kContinue; }  // 01
 
 		// members
 		BSTEventValueData eventDataStruct;  // 08
@@ -184,4 +185,58 @@ namespace RE
 		BSTOptional<typename T::value_type> optionalValue;  // ??
 		BSSpinLock dataLock;                                // ??
 	};
+
+	class BSTGlobalEvent :
+		public BSTSingletonSDM<BSTGlobalEvent>
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::BSTGlobalEvent };
+		static constexpr auto VTABLE{ VTABLE::BSTGlobalEvent };
+
+		struct KillSDMEvent
+		{};
+		static_assert(sizeof(KillSDMEvent) == 0x01);
+
+		class KillSDMEventSource :
+			public BSTEventSource<KillSDMEvent>
+		{};
+		static_assert(sizeof(KillSDMEventSource) == 0x58);
+
+		template <class Event>
+		class EventSource :
+			public BSTEventSink<KillSDMEvent>,
+			public BSTSingletonSDM<EventSource<Event>>,
+			public BSTEventSource<Event>
+		{
+		public:
+			EventSource(KillSDMEventSource* a_source)
+			{
+				a_source->RegisterSink(this);
+			}
+
+			virtual ~EventSource() = default;  // 00
+
+			// override
+			virtual BSEventNotifyControl ProcessEvent([[maybe_unused]] const KillSDMEvent& a_event, BSTEventSource<KillSDMEvent>* a_source) override  // 01
+			{
+				a_source->UnregisterSink(this);
+				delete this;
+
+				return BSEventNotifyControl::kContinue;
+			}
+		};
+		static_assert(sizeof(EventSource<void*>) == 0x68);
+
+		virtual ~BSTGlobalEvent();  // 00
+
+		[[nodiscard]] static BSTGlobalEvent* GetSingleton()
+		{
+			REL::Relocation<BSTGlobalEvent**> singleton{ REL::ID(4796078) };
+			return *singleton;
+		}
+
+		// members
+		KillSDMEventSource eventSourceSDMKiller;  // 10
+	};
+	static_assert(sizeof(BSTGlobalEvent) == 0x68);
 }

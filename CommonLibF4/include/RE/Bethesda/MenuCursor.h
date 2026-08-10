@@ -6,8 +6,8 @@
 namespace RE
 {
 	class __declspec(novtable) MenuCursor :
-		public BSTSingletonSDM<MenuCursor>,  // 20
-		public BSInputEventSingleUser        // 00
+		public BSInputEventSingleUser,      // 00
+		public BSTSingletonSDM<MenuCursor>  // 20
 	{
 	public:
 		static constexpr auto RTTI{ RTTI::MenuCursor };

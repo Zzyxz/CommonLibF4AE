@@ -32,6 +32,13 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::Inventory3DManager };
 		static constexpr auto VTABLE{ VTABLE::Inventory3DManager };
 
+		void ClearModel()
+		{
+			using func_t = decltype(&Inventory3DManager::ClearModel);
+			REL::Relocation<func_t> func{ REL::ID(2249113) };
+			return func(this);
+		}
+
 		// members
 		bool useBoundForScale: 1;                                                // 010:0
 		bool startedZoomThisFrame: 1;                                            // 010:1

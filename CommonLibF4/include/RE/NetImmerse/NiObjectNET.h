@@ -1,12 +1,19 @@
 #pragma once
 
 #include "RE/Bethesda/BSFixedString.h"
+#include "RE/Bethesda/BSLock.h"
+#include "RE/Bethesda/BSTArray.h"
+#include "RE/NetImmerse/NiExtraData.h"
 #include "RE/NetImmerse/NiObject.h"
 #include "RE/NetImmerse/NiSmartPointer.h"
 
 namespace RE
 {
-	class NiExtraDataContainer;
+	class NiExtraDataContainer : public BSTArray<NiExtraData*>
+	{
+	public:
+		BSAutoLock<BSSpinLock, BSAutoLockDefaultPolicy> lock;
+	};
 	class NiTimeController;
 
 	class __declspec(novtable) NiObjectNET :
@@ -23,6 +30,8 @@ namespace RE
 		F4_HEAP_REDEFINE_NEW(NiObjectNET);
 
 		[[nodiscard]] std::string_view GetName() const { return name; }
+
+		[[nodiscard]] NiExtraData* GetExtraData(BSFixedString name) const noexcept;
 
 		// members
 		BSFixedString name{ "" };                 // 10

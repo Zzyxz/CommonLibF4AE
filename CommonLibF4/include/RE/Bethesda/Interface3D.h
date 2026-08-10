@@ -135,6 +135,13 @@ namespace RE
 				return func(this, a_unhideGeometries);
 			}
 
+			void Disable()
+			{
+				using func_t = decltype(&Renderer::Disable);
+				REL::Relocation<func_t> func{ REL::ID(2222523) };
+				return func(this);
+			}
+
 			// members
 			BSTAlignedArray<UIShaderFXInfo> colorFXInfos;                      // 000
 			BSTAlignedArray<UIShaderFXInfo> backgroundFXInfos;                 // 018

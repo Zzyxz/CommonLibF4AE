@@ -2,6 +2,7 @@
 
 #include "RE/Bethesda/AITimeStamp.h"
 #include "RE/Bethesda/BSFixedString.h"
+#include "RE/Bethesda/CFilter.h"
 #include "RE/Bethesda/BSLock.h"
 #include "RE/Bethesda/BSPointerHandle.h"
 #include "RE/Bethesda/BSSoundHandle.h"
@@ -22,9 +23,9 @@ namespace RE
 	enum class ACTOR_LIFE_STATE;
 	enum class ACTOR_LOS_LOCATION;
 	enum class ATTACK_STATE_ENUM;
+	enum class DEFAULT_OBJECT;
 	enum class PACKAGE_OBJECT_TYPE;
 	enum class POWER_ATTACK_TYPE;
-	enum class PTYPE;
 	enum class RESET_3D_FLAGS;
 	enum class SIT_SLEEP_STATE;
 
@@ -59,7 +60,6 @@ namespace RE
 	class BSFaceGenAnimationData;
 	class BSLightingShaderProperty;
 	class BSPathingRequest;
-	class BSTransformDeltaEvent;
 	class CombatController;
 	class CombatGroup;
 	class EffectItem;
@@ -85,6 +85,7 @@ namespace RE
 	struct AIPerkData;
 	struct BSAnimationGraphVariableCache;
 	struct BSMovementDataChangedEvent;
+	struct BSTransformDeltaEvent;
 	struct BSSubGraphActivationUpdate;
 	struct CastPowerItem;
 	struct DeferredHideLimb;
@@ -94,7 +95,14 @@ namespace RE
 
 	namespace ActorEquipManagerEvent
 	{
-		struct Event;
+		struct Event
+		{
+			uint32_t unk00;            //00
+			uint8_t pad04[0x7 - 0x4];  //04
+			bool isUnequip;            //07
+			void* unk08;               //08
+			Actor* a;                  //10	equip target
+		};
 	}
 
 	namespace MagicSystem
@@ -115,6 +123,55 @@ namespace RE
 		kWaitingToInteract,
 		kInteracting,
 		kWaitingToStopInteracting
+	};
+
+	enum class PTYPE : std::int32_t
+	{
+		kExplore = 0,
+		kFollow = 1,
+		kEscore = 2,
+		kEat = 3,
+		kSleep = 4,
+		kWander = 5,
+		kTravel = 6,
+		kAccompany = 7,
+		kUseItemAt = 8,
+		kAmbush = 9,
+		kFleeNonCombat = 10,
+		kCastMagic = 11,
+		kSandbox = 12,
+		kPatrol = 13,
+		kGuard = 14,
+		kDialogue = 15,
+		kUseWeapon = 16,
+		kFind = 17,
+		kCustom = 18,
+		kTemplate = 19,
+		kActivate = 20,
+		kAlarm = 21,
+		kFlee = 22,
+		kTrespass = 23,
+		kSpectator = 24,
+		kGreet = 25,
+		kGetUp = 26,
+		kDoNothing = 27,
+		kInGameDialogue = 28,
+		kSurface = 29,
+		kSearchForAttacker = 30,
+		kAvoidReference = 31,
+		kBumpReaction = 32,
+		kGrenadeMineReaction = 33,
+		kStealWarning = 34,
+		kPickpocketWarning = 35,
+		kMovementBlocked = 36,
+		kVampireFeed = 37,
+		kCannibal = 38,
+		kLand = 39,
+		kUnused = 40,
+		kMountActor = 41,
+		kDismountActor = 42,
+		kClearMountPosition = 43,
+		kClearPowerArmorExit = 44,
 	};
 
 	struct MiddleLowProcessData
@@ -212,6 +269,13 @@ namespace RE
 	public:
 		static constexpr auto RTTI{ RTTI::EquippedWeaponData };
 		static constexpr auto VTABLE{ VTABLE::EquippedWeaponData };
+
+		void SetupFireSounds(Actor& a_actor, BGSObjectInstanceT<TESObjectWEAP>& a_weapon)
+		{
+			using func_t = decltype(&RE::EquippedWeaponData::SetupFireSounds);
+			REL::Relocation<func_t> func{ REL::ID(2232275) };
+			return func(this, a_actor, a_weapon);
+		}
 
 		// members
 		TESAmmo* ammo;                                                                               // 10
@@ -438,11 +502,76 @@ namespace RE
 			return func(this, a_equipIndex);
 		}
 
+		float GetHeadHeightOffset()
+		{
+			using func_t = decltype(&AIProcess::GetHeadHeightOffset);
+			static REL::Relocation<func_t> func{ REL::ID(2232336) };
+			return func(this);
+		}
+
+		void KnockExplosion(Actor* a_actor, const NiPoint3& a_location, float a_magnitude)
+		{
+			using func_t = decltype(&AIProcess::KnockExplosion);
+			REL::Relocation<func_t> func{ REL::ID(2232384) };
+			return func(this, a_actor, a_location, a_magnitude);
+		}
+
+		void SetActorsDetectionEvent(Actor* a_actor, const NiPoint3& a_location, std::int32_t a_soundLevel, TESObjectREFR* a_refr)
+		{
+			using func_t = decltype(&AIProcess::SetActorsDetectionEvent);
+			REL::Relocation<func_t> func{ REL::ID(2231738) };
+			return func(this, a_actor, a_location, a_soundLevel, a_refr);
+		}
+
 		void SetCurrentAmmo(BGSEquipIndex a_equipIndex, TESAmmo* a_ammo)
 		{
 			using func_t = decltype(&AIProcess::SetCurrentAmmo);
 			REL::Relocation<func_t> func{ REL::ID(2232302) };
 			return func(this, a_equipIndex, a_ammo);
+		}
+
+		void SetEquippedItem(Actor* a, BGSObjectInstance& instance, const BGSEquipSlot* slot)
+		{
+			using func_t = decltype(&AIProcess::SetEquippedItem);
+			REL::Relocation<func_t> func{ REL::ID(2231627) };
+			return func(this, a, instance, slot);
+		}
+
+		void SetupSpecialIdle(
+			Actor& a_actor,
+			DEFAULT_OBJECT a_defaultObject,
+			TESIdleForm* a_idle,
+			bool a_unk,
+			TESObjectREFR* a_reference)
+		{
+			using func_t = decltype(&AIProcess::SetupSpecialIdle);
+			REL::Relocation<func_t> func{ REL::ID(2231704) };
+			return func(this, a_actor, a_defaultObject, a_idle, a_unk, a_reference);
+		}
+
+		void PlayIdle(Actor* a_actor, std::uint32_t a_defaultObject, TESIdleForm* a_idle, bool a_unk = true, std::uint64_t a_reference = 0)
+		{
+			assert(a_actor);
+			SetupSpecialIdle(
+				*a_actor,
+				static_cast<DEFAULT_OBJECT>(a_defaultObject),
+				a_idle,
+				a_unk,
+				reinterpret_cast<TESObjectREFR*>(a_reference));
+		}
+
+		bool RequestLoadAnimationsForWeaponChange(Actor& a_actor)
+		{
+			using func_t = decltype(&AIProcess::RequestLoadAnimationsForWeaponChange);
+			REL::Relocation<func_t> func{ REL::ID(2231758) };
+			return func(this, a_actor);
+		}
+
+		bool IsWeaponSubgraphFinishedLoading(Actor& a_actor)
+		{
+			using func_t = decltype(&AIProcess::IsWeaponSubgraphFinishedLoading);
+			REL::Relocation<func_t> func{ REL::ID(2231757) };
+			return func(this, a_actor);
 		}
 
 		// members
@@ -511,6 +640,20 @@ namespace RE
 		virtual void EffectActiveStatusChanged([[maybe_unused]] ActiveEffect* a_effect) { return; }                                                                                  // 0B
 		virtual bool CheckAbsorb([[maybe_unused]] Actor* a_caster, [[maybe_unused]] MagicItem* a_spell, [[maybe_unused]] const EffectItem* a_effectItem) { return false; }           // 0C
 
+		[[nodiscard]] bool IsTakingHealthDamageFromActiveEffect()
+		{
+			using func_t = decltype(&MagicTarget::IsTakingHealthDamageFromActiveEffect);
+			REL::Relocation<func_t> func{ REL::ID(2226397) };
+			return func(this);
+		}
+
+		[[nodiscard]] bool IsTakingRadDamageFromActiveEffect()
+		{
+			using func_t = decltype(&MagicTarget::IsTakingRadDamageFromActiveEffect);
+			REL::Relocation<func_t> func{ REL::ID(2226398) };
+			return func(this);
+		}
+
 		// members
 		SpellDispelData* postUpdateDispelList;  // 08
 		std::int8_t flags;                      // 10
@@ -525,6 +668,19 @@ namespace RE
 		kDrawn,
 		kWantToSheathe,
 		kSheathing
+	};
+
+	enum class GUN_STATE : std::uint32_t
+	{
+		kDrawn,
+		kRelaxed,
+		kBlocked,
+		kAlert,
+		kReloading,
+		kThrowing,
+		kSighted,
+		kFire,
+		kFireSighted
 	};
 
 	class __declspec(novtable) ActorState :
@@ -622,6 +778,53 @@ namespace RE
 		static constexpr auto VTABLE{ VTABLE::Actor };
 		static constexpr auto FORM_ID{ ENUM_FORM_ID::kACHR };
 
+		enum class BOOL_FLAGS
+		{
+			kNone = 0,
+			kScenePackage = 1 << 0,
+			kIsAMount = 1 << 1,
+			kIsMountPointClear = 1 << 2,
+			kIsGettingOnOffMount = 1 << 3,
+			kInRandomScene = 1 << 4,
+			kNoBleedoutRecovery = 1 << 5,
+			kInBleedoutAnimation = 1 << 6,
+			kCanDoFavor = 1 << 7,
+			kShouldAnimGraphUpdate = 1 << 8,
+			kCanSpeakToEssentialDown = 1 << 9,
+			kBribedByPlayer = 1 << 10,
+			kAngryWithPlayer = 1 << 11,
+			kIsTresspassing = 1 << 12,
+			kCanSpeak = 1 << 13,
+			kIsInKillMove = 1 << 14,
+			kAttackOnSight = 1 << 15,
+			kIsCommandedActor = 1 << 16,
+			kForceOneAnimGraphUpdate = 1 << 17,
+			kEssential = 1 << 18,
+			kProtected = 1 << 19,
+			kAttackingDisabled = 1 << 20,
+			kCastingDisabled = 1 << 21,
+			kSceneHeadtrackRotation = 1 << 22,
+			kForceIncMinBoneUpdate = 1 << 23,
+			kCrimeSearch = 1 << 24,
+			kMovingIntoLoadedArea = 1 << 25,
+			kDoNotShowOnStealthMeter = 1 << 26,
+			kMovementBlocked = 1 << 27,
+			kAllowInstantFurniturePopInPlayerCell = 1 << 28,
+			kForceAnimGraphUpdate = 1 << 29,
+			kCheckAddEffectDualCast = 1 << 30,
+			kUnderwater = 1 << 31,
+		};
+
+		enum class DETECTION_PRIORITY
+		{
+			kNone = 0,
+			kVeryLow = 1,
+			kLow = 2,
+			kNormal = 3,
+			kHigh = 4,
+			kCritical = 5
+		};
+
 		// add
 		virtual void PlayPickUpSound(TESBoundObject* a_boundObj, bool a_pickUp, bool a_use);                                                                                                             // 0C6
 		virtual float GetHeading() const { return data.angle.z; }                                                                                                                                        // 0C7
@@ -709,7 +912,7 @@ namespace RE
 		virtual bool DrinkPotion(AlchemyItem* a_potion, std::uint32_t a_stackID);                                                                                                                        // 119
 		virtual bool CheckCast(MagicItem* a_spell, bool a_dualCast, MagicSystem::CannotCastReason* a_reason);                                                                                            // 11A
 		virtual void CheckTempModifiers() { return; }                                                                                                                                                    // 11B
-		virtual void SetLastRiddenMount([[maybe_unused]] ActorHandle a_mount) { return; }                                                                                                                // 11C
+		virtual void SetLastRiddenMount(ActorHandle a_mount) { return; }                                                                                                                                 // 11C
 		virtual ActorHandle QLastRiddenMount() const;                                                                                                                                                    // 11D
 		virtual bool CalculateCachedOwnerIsUndead() const;                                                                                                                                               // 11E
 		virtual bool CalculateCachedOwnerIsNPC() const;                                                                                                                                                  // 11F
@@ -733,9 +936,39 @@ namespace RE
 		virtual float CheckClampDamageModifier(ActorValueInfo& a_info, float a_delta);                                                                                                                   // 131
 		virtual void ValidateNewPath([[maybe_unused]] const MovementMessageNewPath& a_newPathMessage) { return; }                                                                                        // 132
 
+
+
+		void AddPerk(BGSPerk* a_perk, std::uint8_t a_rank = 0)
+		{
+			using func_t = decltype(&Actor::AddPerk);
+			REL::Relocation<func_t> func{ REL::ID(2230121) };
+			return func(this, a_perk, a_rank);
+		}
+
+		void ApplySpell(SpellItem* a_spell, Actor* a_actor, TESBoundObject* a_object)
+		{
+			using func_t = decltype(&Actor::ApplySpell);
+			REL::Relocation<func_t> func{ REL::ID(2231300) };
+			return func(this, a_spell, a_actor, a_object);
+		}
+
 		[[nodiscard]] TESAmmo* GetCurrentAmmo(BGSEquipIndex a_equipIndex) const
 		{
 			return currentProcess ? currentProcess->GetCurrentAmmo(a_equipIndex) : nullptr;
+		}
+
+		[[nodiscard]] BGSObjectInstance GetEquippedItem(BGSEquipIndex a_equipIndex) const
+		{
+			using func_t = BGSObjectInstance(const Actor*, BGSEquipIndex);
+			REL::Relocation<func_t> func{ REL::ID(2231089) };
+			return func(this, a_equipIndex);
+		}
+
+		[[nodiscard]] BGSObjectInstance GetCurrentWeapon(BGSEquipIndex a_equipIndex)
+		{
+			using func_t = decltype(&Actor::GetCurrentWeapon);
+			REL::Relocation<func_t> func{ REL::ID(2231092) };
+			return func(this, a_equipIndex);
 		}
 
 		[[nodiscard]] bool GetHostileToActor(Actor* a_actor)
@@ -745,7 +978,40 @@ namespace RE
 			return func(this, a_actor);
 		}
 
+		[[nodiscard]] std::int16_t GetLevel()
+		{
+			using func_t = decltype(&Actor::GetLevel);
+			REL::Relocation<func_t> func{ REL::ID(2229734) };
+			return func(this);
+		}
+
 		[[nodiscard]] TESNPC* GetNPC() const noexcept;
+
+		[[nodiscard]] std::uint8_t GetPerkRank(const BGSPerk* a_perk)
+		{
+			using func_t = decltype(&Actor::GetPerkRank);
+			REL::Relocation<func_t> func{ REL::ID(2230125) };
+			return func(this, a_perk);
+		}
+
+		[[nodiscard]] bool HasPerk(const BGSPerk* a_perk)
+		{
+			return GetPerkRank(a_perk) != 0;
+		}
+
+		[[nodiscard]] bool IsJumping()
+		{
+			using func_t = decltype(&Actor::IsJumping);
+			REL::Relocation<func_t> func{ REL::ID(2229640) };
+			return func(this);
+		}
+
+		void RemovePerk(BGSPerk* a_perk)
+		{
+			using func_t = decltype(&Actor::RemovePerk);
+			REL::Relocation<func_t> func{ REL::ID(2230122) };
+			return func(this, a_perk);
+		}
 
 		void Reset3D(bool a_reloadAll, std::uint32_t a_additionalFlags, bool a_queueReset, std::uint32_t a_excludeFlags)
 		{
@@ -754,11 +1020,196 @@ namespace RE
 			return func(this, a_reloadAll, a_additionalFlags, a_queueReset, a_excludeFlags);
 		}
 
+		void RewardExperience(float a_amount, bool a_direct, TESObjectREFR* a_actionTarget, TESObjectREFR* a_killWeapon)
+		{
+			using func_t = decltype(&Actor::RewardExperience);
+			REL::Relocation<func_t> func{ REL::ID(2230428) };
+			return func(this, a_amount, a_direct, a_actionTarget, a_killWeapon);
+		}
+
+		int32_t RequestDetectionLevel(Actor* a_target, DETECTION_PRIORITY a_priority = DETECTION_PRIORITY::kNormal)
+		{
+			using func_t = decltype(&Actor::RequestDetectionLevel);
+			REL::Relocation<func_t> func{ REL::ID(2230190) };
+			return func(this, a_target, a_priority);
+		}
+
+		int32_t RequestDetectionState(Actor* a_target, DETECTION_PRIORITY a_priority = DETECTION_PRIORITY::kNormal)
+		{
+			using func_t = decltype(&Actor::RequestDetectionState);
+			REL::Relocation<func_t> func{ REL::ID(2230184) };
+			return func(this, a_target, a_priority);
+		}
+
+		int32_t GetDetectionState(Actor* a_target)
+		{
+			using func_t = decltype(&Actor::GetDetectionState);
+			REL::Relocation<func_t> func{ REL::ID(2230183) };
+			return func(this, a_target);
+		}
+
 		void SetCurrentAmmo(BGSEquipIndex a_equipIndex, TESAmmo* a_ammo)
 		{
 			if (currentProcess) {
 				currentProcess->SetCurrentAmmo(a_equipIndex, a_ammo);
 			}
+		}
+
+		void TrespassAlarm(TESObjectREFR* a_refr, TESForm* a_owner, std::int32_t a_crime)
+		{
+			using func_t = decltype(&Actor::TrespassAlarm);
+			REL::Relocation<func_t> func{ REL::ID(2229834) };
+			return func(this, a_refr, a_owner, a_crime);
+		}
+
+		void HandleDefaultAnimationsSwitch()
+		{
+			using func_t = decltype(&Actor::HandleDefaultAnimationsSwitch);
+			REL::Relocation<func_t> func{ REL::ID(2229780) };
+			return func(this);
+		}
+
+		void HandleDefaultAnimationSwitch()
+		{
+			HandleDefaultAnimationsSwitch();
+		}
+
+		void HandleItemEquip(bool bCullBone)
+		{
+			using func_t = decltype(&Actor::HandleItemEquip);
+			REL::Relocation<func_t> func{ REL::ID(2229781) };
+			return func(this, bCullBone);
+		}
+
+		bool PerformAction(BGSAction* a_action, TESObjectREFR* a_target)
+		{
+			using func_t = decltype(&Actor::PerformAction);
+			REL::Relocation<func_t> func{ REL::ID(2231177) };
+			return func(this, a_action, a_target);
+		}
+
+		void SetGunState(GUN_STATE gun_state, bool unk = true)
+		{
+			using func_t = decltype(&Actor::SetGunState);
+			REL::Relocation<func_t> func{ REL::ID(2231175) };
+			return func(this, gun_state, unk);
+		}
+
+		void GetAimVector(NiPoint3& out)
+		{
+			using func_t = decltype(&Actor::GetAimVector);
+			REL::Relocation<func_t> func{ REL::ID(2230378) };
+			return func(this, out);
+		}
+
+		[[nodiscard]] std::uint32_t GetCurrentCollisionGroup()
+		{
+			using func_t = decltype(&Actor::GetCurrentCollisionGroup);
+			REL::Relocation<func_t> func{ REL::ID(2229993) };
+			return func(this);
+		}
+
+		CFilter GetCollisionFilter()
+		{
+			using func_t = decltype(&Actor::GetCollisionFilter);
+			REL::Relocation<func_t> func{ REL::ID(2229991) };
+			return func(this);
+		}
+
+		bool GetCurrentFireLocation(BGSEquipIndex index, NiPoint3& out)
+		{
+			using func_t = decltype(&Actor::GetCurrentFireLocation);
+			REL::Relocation<func_t> func{ REL::ID(2231167) };
+			return func(this, index, out);
+		}
+
+		float GetDesiredSpeed()
+		{
+			using func_t = decltype(&Actor::GetDesiredSpeed);
+			REL::Relocation<func_t> func{ REL::ID(2230410) };
+			return func(this);
+		}
+
+		NiAVObject* GetClosestBone(NiPoint3 pos, NiPoint3 dir)
+		{
+			using func_t = decltype(&Actor::GetClosestBone);
+			REL::Relocation<func_t> func{ REL::ID(2230051) };
+			return func(this, pos, dir);
+		}
+
+		bhkCharacterController* Move(float deltaTime, NiPoint3 deltaPos, bool unk)
+		{
+			using func_t = decltype(&Actor::Move);
+			REL::Relocation<func_t> func{ REL::ID(2229934) };
+			return func(this, deltaTime, deltaPos, unk);
+		}
+
+		void ExitCover()
+		{
+			using func_t = decltype(&Actor::ExitCover);
+			REL::Relocation<func_t> func{ REL::ID(2231166) };
+			return func(this);
+		}
+
+		TESCombatStyle* GetCombatStyle()
+		{
+			using func_t = decltype(&Actor::GetCombatStyle);
+			REL::Relocation<func_t> func{ REL::ID(2231053) };
+			return func(this);
+		}
+
+		bool IsCrippled()
+		{
+			using func_t = decltype(&Actor::IsCrippled);
+			REL::Relocation<func_t> func{ REL::ID(2230998) };
+			return func(this);
+		}
+
+		bool IsFollowing()
+		{
+			using func_t = decltype(&Actor::IsFollowing);
+			REL::Relocation<func_t> func{ REL::ID(2230013) };
+			return func(this);
+		}
+
+		bool IsPathValid()
+		{
+			using func_t = decltype(&Actor::IsPathValid);
+			REL::Relocation<func_t> func{ REL::ID(2230273) };
+			return func(this);
+		}
+
+		bool IsPathing()
+		{
+			using func_t = decltype(&Actor::IsPathing);
+			REL::Relocation<func_t> func{ REL::ID(2230276) };
+			return func(this);
+		}
+
+		bool IsPathingComplete()
+		{
+			using func_t = decltype(&Actor::IsPathingComplete);
+			REL::Relocation<func_t> func{ REL::ID(2230274) };
+			return func(this);
+		}
+
+		bool IsQuadruped()
+		{
+			using func_t = decltype(&Actor::IsQuadruped);
+			REL::Relocation<func_t> func{ REL::ID(2229614) };
+			return func(this);
+		}
+
+		bool StartCombat(Actor* a_actor, Actor* a_target)
+		{
+			using func_t = decltype(&Actor::StartCombat);
+			REL::Relocation<func_t> func{ REL::ID(2231078) };
+			return func(this, a_actor, a_target);
+		}
+
+		bool StarCombat(Actor* a_actor, Actor* a_target)
+		{
+			return StartCombat(a_actor, a_target);
 		}
 
 		// members

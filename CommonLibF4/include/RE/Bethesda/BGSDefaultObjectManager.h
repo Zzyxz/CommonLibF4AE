@@ -445,16 +445,16 @@ namespace RE
 
 		[[nodiscard]] static BGSDefaultObjectManager* GetSingleton()
 		{
-			REL::Relocation<BGSDefaultObjectManager**> singleton{ REL::ID(4796135) };
-			return *singleton;
+			REL::Relocation<BGSDefaultObjectManager*> singleton{ REL::ID(4796209) };
+			return singleton.get();
 		}
 
 		[[nodiscard]] TESForm* GetDefaultObject(DEFAULT_OBJECT a_obj) const noexcept
 		{
 			assert(a_obj < DEFAULT_OBJECT::kTotal);
-			return objectInitArray[stl::to_underlying(a_obj)] ?
-			           objectArray[stl::to_underlying(a_obj)] :
-			           nullptr;
+			using func_t = TESForm*(DEFAULT_OBJECT);
+			REL::Relocation<func_t> func{ REL::ID(2192850) };
+			return func(a_obj);
 		}
 
 		template <class T>
@@ -481,10 +481,35 @@ namespace RE
 		static constexpr auto VTABLE{ VTABLE::BGSDefaultObject };
 		static constexpr auto FORM_ID{ ENUM_FORM_ID::kDFOB };
 
+		BGSDefaultObject(const char* a_name, ENUM_FORM_ID a_formType, const char* a_description)
+		{
+			ctor(a_name, a_formType, a_description);
+		}
+
+		[[nodiscard]] static BSTArray<BGSDefaultObject*>* GetSingleton()
+		{
+			REL::Relocation<BSTArray<BGSDefaultObject*>**> singleton{ REL::ID(4797762) };
+			return *singleton;
+		}
+
+		template <class T = TESForm>
+		[[nodiscard]] T* GetForm()
+		{
+			return form ? form->As<T>() : nullptr;
+		}
+
 		// members
-		TESForm* form;               // 20
-		std::int8_t type;            // 28
-		BSFixedString formEditorID;  // 30
+		TESForm* form;                                      // 20
+		stl::enumeration<ENUM_FORM_ID, std::uint8_t> type;  // 28
+		BSFixedString formEditorID;                         // 30
+
+	private:
+		BGSDefaultObject* ctor(const char* a_name, ENUM_FORM_ID a_formType, const char* a_description)
+		{
+			using func_t = decltype(&BGSDefaultObject::ctor);
+			REL::Relocation<func_t> func{ REL::ID(2197003) };
+			return func(this, a_name, a_formType, a_description);
+		}
 	};
 	static_assert(sizeof(BGSDefaultObject) == 0x38);
 }
