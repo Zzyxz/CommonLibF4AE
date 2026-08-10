@@ -393,4 +393,51 @@ namespace F4SE
 		const char* name;
 		std::uint32_t version;
 	};
+
+	struct PluginVersionData
+	{
+		enum : std::uint32_t
+		{
+			kVersion = 1
+		};
+
+		enum : std::uint32_t
+		{
+			kAddressIndependence_Signatures = 1 << 0,
+			kAddressIndependence_AddressLibrary_1_10_980 = 1 << 1,
+			kAddressIndependence_AddressLibrary_1_11_137 = 1 << 2
+		};
+
+		enum : std::uint32_t
+		{
+			kStructureIndependence_NoStructs = 1 << 0,
+			kStructureIndependence_1_10_980Layout = 1 << 1,
+			kStructureIndependence_1_11_137Layout = 1 << 2
+		};
+
+		std::uint32_t dataVersion{ kVersion };
+		std::uint32_t pluginVersion{ 0 };
+		char name[256]{};
+		char author[256]{};
+		std::uint32_t addressIndependence{ 0 };
+		std::uint32_t structureIndependence{ 0 };
+		std::uint32_t compatibleVersions[16]{};
+		std::uint32_t seVersionRequired{ 0 };
+		std::uint32_t reservedNonBreaking{ 0 };
+		std::uint32_t reservedBreaking{ 0 };
+		std::uint8_t reserved[512]{};
+	};
+
+	static_assert(offsetof(PluginVersionData, dataVersion) == 0x000);
+	static_assert(offsetof(PluginVersionData, pluginVersion) == 0x004);
+	static_assert(offsetof(PluginVersionData, name) == 0x008);
+	static_assert(offsetof(PluginVersionData, author) == 0x108);
+	static_assert(offsetof(PluginVersionData, addressIndependence) == 0x208);
+	static_assert(offsetof(PluginVersionData, structureIndependence) == 0x20C);
+	static_assert(offsetof(PluginVersionData, compatibleVersions) == 0x210);
+	static_assert(offsetof(PluginVersionData, seVersionRequired) == 0x250);
+	static_assert(offsetof(PluginVersionData, reservedNonBreaking) == 0x254);
+	static_assert(offsetof(PluginVersionData, reservedBreaking) == 0x258);
+	static_assert(offsetof(PluginVersionData, reserved) == 0x25C);
+	static_assert(sizeof(PluginVersionData) == 0x45C);
 }
