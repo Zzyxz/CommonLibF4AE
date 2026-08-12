@@ -9,7 +9,7 @@ namespace RE
 		inline void DisconnectSpline(TESObjectREFR& a_spline)
 		{
 			using func_t = decltype(&DisconnectSpline);
-			REL::Relocation<func_t> func{ REL::ID(2219530) };
+			REL::Relocation<func_t> func{ REL::ID(2195074) };
 			return func(a_spline);
 		}
 

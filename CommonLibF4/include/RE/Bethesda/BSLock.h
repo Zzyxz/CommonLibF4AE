@@ -24,9 +24,21 @@ namespace RE
 
 		[[nodiscard]] bool try_lock()
 		{
-			using func_t = decltype(&BSSpinLock::try_lock);
-			REL::Relocation<func_t> func{ REL::ID(2267902) };
-			return func(this);
+			stl::atomic_ref lockCount{ _lockCount };
+			const auto threadID = WinAPI::GetCurrentThreadID();
+
+			if (_owningThread == threadID) {
+				++lockCount;
+				return true;
+			}
+
+			std::uint32_t expected{ 0 };
+			if (lockCount.compare_exchange_strong(expected, 1)) {
+				_owningThread = threadID;
+				return true;
+			}
+
+			return false;
 		}
 
 		void unlock()
