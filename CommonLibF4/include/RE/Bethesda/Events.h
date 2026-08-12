@@ -25,16 +25,38 @@ namespace RE
 	struct BSThreadEvent
 	{
 	public:
-		enum class Event
+		enum class ThreadEvent
 		{
 			kOnStartup,
 			kOnShutdown
 		};
+		using Event = ThreadEvent;
 
 		static void InitSDM()
 		{
 			using func_t = decltype(&BSThreadEvent::InitSDM);
 			REL::Relocation<func_t> func{ REL::ID(2268180) };
+			return func();
+		}
+
+		static void RegisterSink(BSTEventSink<ThreadEvent>* a_sink)
+		{
+			using func_t = decltype(&BSThreadEvent::RegisterSink);
+			REL::Relocation<func_t> func{ REL::ID(2268181) };
+			return func(a_sink);
+		}
+
+		static void UnregisterSink(BSTEventSink<ThreadEvent>* a_sink)
+		{
+			using func_t = decltype(&BSThreadEvent::UnregisterSink);
+			REL::Relocation<func_t> func{ REL::ID(2268182) };
+			return func(a_sink);
+		}
+
+		static void KillSDM()
+		{
+			using func_t = decltype(&BSThreadEvent::KillSDM);
+			REL::Relocation<func_t> func{ REL::ID(2268183) };
 			return func();
 		}
 	};
