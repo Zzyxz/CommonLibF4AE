@@ -77,6 +77,41 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::BSUIMessageData };
 		static constexpr auto VTABLE{ VTABLE::BSUIMessageData };
 
+		static void SendUIMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, std::uint32_t a_data)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284976) };
+			return func(a_menuName, a_type, a_data);
+		}
+
+		static void SendUIStringMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIStringMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284977) };
+			return func(a_menuName, a_type, a_fixedString);
+		}
+
+		static void SendUIStringBoolMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, bool a_data)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIStringBoolMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284978) };
+			return func(a_menuName, a_type, a_fixedString, a_data);
+		}
+
+		static void SendUIStringUIntMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, std::uint32_t a_data)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIStringUIntMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284979) };
+			return func(a_menuName, a_type, a_fixedString, a_data);
+		}
+
+		static void SendUIStringFloatMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, float a_data)
+		{
+			using func_t = decltype(&BSUIMessageData::SendUIStringFloatMessage);
+			REL::Relocation<func_t> func{ REL::ID(2284980) };
+			return func(a_menuName, a_type, a_fixedString, a_data);
+		}
+
 		static void SendUIBoolMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, bool a_value)
 		{
 			using func_t = decltype(&BSUIMessageData::SendUIBoolMessage);
@@ -89,13 +124,6 @@ namespace RE
 			using func_t = decltype(&BSUIMessageData::SendUIPtrMessage);
 			REL::Relocation<func_t> func{ REL::ID(2284982) };
 			return func(a_menuName, a_type, a_data);
-		}
-
-		static void SendUIStringUIntMessage(const BSFixedString& a_menuName, UI_MESSAGE_TYPE a_type, const BSFixedString& a_fixedString, std::uint32_t a_data)
-		{
-			using func_t = decltype(&BSUIMessageData::SendUIStringUIntMessage);
-			REL::Relocation<func_t> func{ REL::ID(2284979) };
-			return func(a_menuName, a_type, a_fixedString, a_data);
 		}
 
 		// members
