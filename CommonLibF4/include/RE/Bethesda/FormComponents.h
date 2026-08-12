@@ -1435,7 +1435,7 @@ namespace RE
 		void SetFullNameENG(const char* a_fullName)
 		{
 			using func_t = void (TESFullName::*)(const char*);
-			REL::Relocation<func_t> func{ REL::ID(2204298) };
+			REL::Relocation<func_t> func{ REL::ID(2205221) };
 			return func(this, a_fullName);
 		}
 
