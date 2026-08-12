@@ -433,6 +433,13 @@ namespace RE
 		public BSIntrusiveRefCounted  // 0000
 	{
 	public:
+		void RemoveBipedAmmo()
+		{
+			using func_t = decltype(&BipedAnim::RemoveBipedAmmo);
+			REL::Relocation<func_t> func{ REL::ID(2194359) };
+			return func(this);
+		}
+
 		// members
 		NiNode* root;                                                         // 0008
 		BIPOBJECT object[stl::to_underlying(BIPED_OBJECT::kTotal)];           // 0010

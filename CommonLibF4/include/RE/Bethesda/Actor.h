@@ -84,13 +84,16 @@ namespace RE
 	class EquippedItemData;
 	class HitData;
 	class IAnimationStanceData;
+	class IAIWorldLocation;
 	class IProcedureTreeExecState;
+	class MagicItem;
 	class MovementControllerNPC;
 	class MovementMessageActorCollision;
 	class MovementMessageNewPath;
 	class MovementMessageUpdateRequestImmediate;
 	class MuzzleFlash;
 	class PackageLocation;
+	class PackageTarget;
 	class PerkEntryVisitor;
 	class QueuedFile;
 	class QueuedItem;
@@ -218,6 +221,65 @@ namespace RE
 		virtual void ResetPackData([[maybe_unused]] TESPackage* a_pack) { return; }                                     // 08
 	};
 	static_assert(sizeof(ActorPackageData) == 0x8);
+
+	class __declspec(novtable) GuardActorPackageData :
+		public ActorPackageData  // 00
+	{
+	public:
+		static constexpr auto RTTI{ RTTI::GuardActorPackageData };
+		static constexpr auto VTABLE{ VTABLE::GuardActorPackageData };
+
+		~GuardActorPackageData() override;
+
+		// override (ActorPackageData)
+		PTYPE GetPackageType() override;
+		void SaveGame(BGSSaveFormBuffer* a_saveGameBuffer) override;
+		void LoadGame(ActorPackageLoadFormBuffer* a_loadGameBuffer) override;
+		void InitLoadGame(ActorPackageLoadFormBuffer* a_loadGameBuffer) override;
+
+		void SetWarnedActor(ActorHandle a_actor)
+		{
+			using func_t = decltype(&GuardActorPackageData::SetWarnedActor);
+			REL::Relocation<func_t> func{ REL::ID(2235038) };
+			return func(this, a_actor);
+		}
+
+		void SetAreas(
+			const IAIWorldLocation* a_area1,
+			const IAIWorldLocation* a_area2,
+			const IAIWorldLocation* a_area3)
+		{
+			using func_t = decltype(&GuardActorPackageData::SetAreas);
+			REL::Relocation<func_t> func{ REL::ID(2235039) };
+			return func(this, a_area1, a_area2, a_area3);
+		}
+
+		void SetSuspiciousOf(PackageTarget* a_target)
+		{
+			using func_t = decltype(&GuardActorPackageData::SetSuspiciousOf);
+			REL::Relocation<func_t> func{ REL::ID(2235040) };
+			return func(this, a_target);
+		}
+
+		void SetWarnFromLoc(const IAIWorldLocation* a_location)
+		{
+			using func_t = decltype(&GuardActorPackageData::SetWarnFromLoc);
+			REL::Relocation<func_t> func{ REL::ID(2235041) };
+			return func(this, a_location);
+		}
+
+		// members
+		std::uint32_t unk08;                      // 08
+		ActorHandle warnedActor;                  // 0C
+		std::uint32_t unk10;                      // 10
+		float unk14;                              // 14
+		const IAIWorldLocation* areas[3];         // 18
+		PackageTarget* suspiciousOf;              // 30
+		const IAIWorldLocation* warnFromLoc;      // 38
+		bool unk40;                               // 40
+		bool unk41;                               // 41
+	};
+	static_assert(sizeof(GuardActorPackageData) == 0x48);
 
 	class ActorPackage
 	{
@@ -588,6 +650,55 @@ namespace RE
 		{
 			using func_t = decltype(&AIProcess::IsWeaponSubgraphFinishedLoading);
 			REL::Relocation<func_t> func{ REL::ID(2231757) };
+			return func(this, a_actor);
+		}
+
+		void NotifyItemUnequipped(Actor* a_actor, const EquippedItem& a_item)
+		{
+			using func_t = decltype(&AIProcess::NotifyItemUnequipped);
+			REL::Relocation<func_t> func{ REL::ID(2231631) };
+			return func(this, a_actor, a_item);
+		}
+
+		[[nodiscard]] bool HasDefaultAnimationSet()
+		{
+			using func_t = decltype(&AIProcess::HasDefaultAnimationSet);
+			REL::Relocation<func_t> func{ REL::ID(2231756) };
+			return func(this);
+		}
+
+		void ClearSpokenList()
+		{
+			using func_t = decltype(&AIProcess::ClearSpokenList);
+			REL::Relocation<func_t> func{ REL::ID(2231792) };
+			return func(this);
+		}
+
+		void SetReanimateData(Actor* a_actor, MagicItem* a_item)
+		{
+			using func_t = decltype(&AIProcess::SetReanimateData);
+			REL::Relocation<func_t> func{ REL::ID(2232035) };
+			return func(this, a_actor, a_item);
+		}
+
+		void ProcessGuardStartTravelToLocation(Actor* a_actor, GuardActorPackageData* a_data)
+		{
+			using func_t = decltype(&AIProcess::ProcessGuardStartTravelToLocation);
+			REL::Relocation<func_t> func{ REL::ID(2231660) };
+			return func(this, a_actor, a_data);
+		}
+
+		void ProcessGuardInit(Actor* a_actor, GuardActorPackageData* a_data)
+		{
+			using func_t = decltype(&AIProcess::ProcessGuardInit);
+			REL::Relocation<func_t> func{ REL::ID(2232125) };
+			return func(this, a_actor, a_data);
+		}
+
+		void ClearClothExtraDataCache(const Actor& a_actor)
+		{
+			using func_t = decltype(&AIProcess::ClearClothExtraDataCache);
+			REL::Relocation<func_t> func{ REL::ID(2232487) };
 			return func(this, a_actor);
 		}
 
