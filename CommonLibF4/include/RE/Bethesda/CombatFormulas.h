@@ -5,6 +5,80 @@
 namespace RE
 {
 	class Actor;
+	class BGSAttackData;
+
+	namespace CombatAIFormulas
+	{
+		[[nodiscard]] inline float CalcFlankDistance(Actor* a_actor, Actor* a_target)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcFlankDistance);
+			REL::Relocation<func_t> func{ REL::ID(2248148) };
+			return func(a_actor, a_target);
+		}
+
+		[[nodiscard]] inline float CalcDistractChance(Actor* a_actor, Actor* a_target)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcDistractChance);
+			REL::Relocation<func_t> func{ REL::ID(2248149) };
+			return func(a_actor, a_target);
+		}
+
+		[[nodiscard]] inline float CalcDistractDistance(Actor* a_actor, Actor* a_target)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcDistractDistance);
+			REL::Relocation<func_t> func{ REL::ID(2248150) };
+			return func(a_actor, a_target);
+		}
+
+		[[nodiscard]] inline float CalcFlipThrowProbability(Actor* a_actor)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcFlipThrowProbability);
+			REL::Relocation<func_t> func{ REL::ID(2248153) };
+			return func(a_actor);
+		}
+
+		[[nodiscard]] inline std::uint32_t CalcThrowMaxTargets(Actor* a_actor)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcThrowMaxTargets);
+			REL::Relocation<func_t> func{ REL::ID(2248157) };
+			return func(a_actor);
+		}
+
+		[[nodiscard]] inline float CalcCoverFlankChance(Actor* a_actor)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcCoverFlankChance);
+			REL::Relocation<func_t> func{ REL::ID(2248171) };
+			return func(a_actor);
+		}
+
+		[[nodiscard]] inline float CalcMeleeAttackChance(Actor* a_actor, Actor* a_target)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcMeleeAttackChance);
+			REL::Relocation<func_t> func{ REL::ID(2248191) };
+			return func(a_actor, a_target);
+		}
+
+		[[nodiscard]] inline float CalcAttackChance(Actor* a_actor, Actor* a_target, BGSAttackData* a_attackData)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcAttackChance);
+			REL::Relocation<func_t> func{ REL::ID(2248192) };
+			return func(a_actor, a_target, a_attackData);
+		}
+
+		[[nodiscard]] inline float CalcRangedThrowChance(Actor* a_actor)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcRangedThrowChance);
+			REL::Relocation<func_t> func{ REL::ID(2248230) };
+			return func(a_actor);
+		}
+
+		[[nodiscard]] inline float CalcRangedGrenadeThrowChance(Actor* a_actor)
+		{
+			using func_t = decltype(&CombatAIFormulas::CalcRangedGrenadeThrowChance);
+			REL::Relocation<func_t> func{ REL::ID(2248231) };
+			return func(a_actor);
+		}
+	}
 
 	namespace CombatFormulas
 	{

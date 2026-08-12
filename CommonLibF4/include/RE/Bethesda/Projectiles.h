@@ -35,6 +35,7 @@ namespace RE
 	class NiAVObject;
 	class NiLight;
 	class NiNode;
+	class ProjectileLaunchData;
 	class QueuedFile;
 
 	struct BeamProjectileImpactEvent;
@@ -120,6 +121,20 @@ namespace RE
 		virtual void Handle3DLoaded() { return; }                                                                        // E8
 		virtual bool ShouldUseDesiredTarget() { return false; }                                                          // E9
 
+		[[nodiscard]] static ProjectileHandle Launch(const ProjectileLaunchData& a_data)
+		{
+			using func_t = decltype(&Projectile::Launch);
+			REL::Relocation<func_t> func{ REL::ID(2236958) };
+			return func(a_data);
+		}
+
+		void Kill()
+		{
+			using func_t = decltype(&Projectile::Kill);
+			REL::Relocation<func_t> func{ REL::ID(2236961) };
+			func(this);
+		}
+
 		void SetPosition(const NiPoint3& a_point)
 		{
 			using func_t = decltype(&Projectile::SetPosition);
@@ -134,8 +149,26 @@ namespace RE
 			func(this, a_activate);
 		}
 
+		[[nodiscard]] bool GetFireNodePos(NiPoint3& a_position) const
+		{
+			using func_t = decltype(&Projectile::GetFireNodePos);
+			REL::Relocation<func_t> func{ REL::ID(2237038) };
+			return func(this, a_position);
+		}
 
+		[[nodiscard]] COL_LAYER GetCollisionLayer() const
+		{
+			using func_t = decltype(&Projectile::GetCollisionLayer);
+			REL::Relocation<func_t> func{ REL::ID(2237045) };
+			return func(this);
+		}
 
+		void AimAtPoint(const NiPoint3& a_point)
+		{
+			using func_t = decltype(&Projectile::AimAtPoint);
+			REL::Relocation<func_t> func{ REL::ID(2237052) };
+			func(this, a_point);
+		}
 		// members
 		BSTArray<ImpactData> impacts;                                              // 110
 		NiTransform followOffset;                                                  // 130
@@ -224,6 +257,13 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::GrenadeProjectile };
 		static constexpr auto VTABLE{ VTABLE::GrenadeProjectile };
 		static constexpr auto FORM_ID{ ENUM_FORM_ID::kPGRE };
+
+		void SetVelocityDamping(float a_linearDamping, float a_angularDamping)
+		{
+			using func_t = decltype(&GrenadeProjectile::SetVelocityDamping);
+			REL::Relocation<func_t> func{ REL::ID(2236777) };
+			func(this, a_linearDamping, a_angularDamping);
+		}
 
 		// members
 		BGSDecalGroup* decalGroup;  // 270

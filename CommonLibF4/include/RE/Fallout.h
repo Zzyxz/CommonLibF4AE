@@ -147,6 +147,7 @@
 #include "RE/Bethesda/CELLJobs.h"
 #include "RE/Bethesda/CFilter.h"
 #include "RE/Bethesda/CollisionLayers.h"
+#include "RE/Bethesda/CombatAI.h"
 #include "RE/Bethesda/CombatFormulas.h"
 #include "RE/Bethesda/Console.h"
 #include "RE/Bethesda/ControlMap.h"

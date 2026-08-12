@@ -24,6 +24,7 @@ namespace RE
 	class BGSObjectInstanceT;
 
 	enum class CHUNK_ID;
+	enum class COL_LAYER;
 	enum class SOUND_LEVEL;
 	enum class STAGGER_MAGNITUDE;
 	enum class WEAPON_RUMBLE_PATTERN;
@@ -806,7 +807,28 @@ namespace RE
 		static constexpr auto VTABLE{ VTABLE::BGSProjectile };
 		static constexpr auto FORM_ID{ ENUM_FORM_ID::kPROJ };
 
-		bool CollidesWithSmallTransparentLayer()
+		[[nodiscard]] BGSSoundDescriptorForm* GetRicochetSound() const
+		{
+			using func_t = decltype(&BGSProjectile::GetRicochetSound);
+			REL::Relocation<func_t> func{ REL::ID(2197617) };
+			return func(this);
+		}
+
+		[[nodiscard]] static float GetRelaunchInterval(const BGSProjectile* a_projectile)
+		{
+			using func_t = decltype(&BGSProjectile::GetRelaunchInterval);
+			REL::Relocation<func_t> func{ REL::ID(2197618) };
+			return func(a_projectile);
+		}
+
+		[[nodiscard]] COL_LAYER GetCollisionLayer() const
+		{
+			using func_t = decltype(&BGSProjectile::GetCollisionLayer);
+			REL::Relocation<func_t> func{ REL::ID(2197619) };
+			return func(this);
+		}
+
+		[[nodiscard]] bool CollidesWithSmallTransparentLayer() const
 		{
 			using func_t = decltype(&BGSProjectile::CollidesWithSmallTransparentLayer);
 			REL::Relocation<func_t> func{ REL::ID(2197620) };
