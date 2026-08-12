@@ -25,11 +25,11 @@ namespace RE
 			return func(a_actor);
 		}
 
-		[[nodiscard]] inline bool IsLimbCoveredByPowerArmor(const Actor& a_actor, const BGSBodyPartData::PartType part)
+		[[nodiscard]] inline bool IsLimbCoveredByPowerArmor(const Actor& a_actor, const BGSBodyPartData::PartType& a_part)
 		{
 			using func_t = decltype(&IsLimbCoveredByPowerArmor);
 			REL::Relocation<func_t> func{ REL::ID(2219440) };
-			return func(a_actor, part);
+			return func(a_actor, a_part);
 		}
 
 		[[nodiscard]] inline bool PlayerInPowerArmor()

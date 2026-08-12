@@ -349,7 +349,7 @@ namespace RE
 		static constexpr auto RTTI{ RTTI::EquippedWeaponData };
 		static constexpr auto VTABLE{ VTABLE::EquippedWeaponData };
 
-		void SetupFireSounds(Actor& a_actor, BGSObjectInstanceT<TESObjectWEAP>& a_weapon)
+		void SetupFireSounds(const Actor& a_actor, const BGSObjectInstanceT<TESObjectWEAP>& a_weapon)
 		{
 			using func_t = decltype(&RE::EquippedWeaponData::SetupFireSounds);
 			REL::Relocation<func_t> func{ REL::ID(2232275) };
@@ -1265,18 +1265,18 @@ namespace RE
 			return func(this);
 		}
 
-		NiAVObject* GetClosestBone(NiPoint3 pos, NiPoint3 dir)
+		NiAVObject* GetClosestBone(NiPoint3& a_position, const NiPoint3& a_direction)
 		{
 			using func_t = decltype(&Actor::GetClosestBone);
 			REL::Relocation<func_t> func{ REL::ID(2230051) };
-			return func(this, pos, dir);
+			return func(this, a_position, a_direction);
 		}
 
-		bhkCharacterController* Move(float deltaTime, NiPoint3 deltaPos, bool unk)
+		bhkCharacterController* Move(float a_deltaTime, const NiPoint3& a_deltaPosition, bool a_unk)
 		{
 			using func_t = decltype(&Actor::Move);
 			REL::Relocation<func_t> func{ REL::ID(2229934) };
-			return func(this, deltaTime, deltaPos, unk);
+			return func(this, a_deltaTime, a_deltaPosition, a_unk);
 		}
 
 		void ExitCover()
