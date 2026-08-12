@@ -11,7 +11,13 @@ namespace Papyrus
 			std::uint32_t a_slotMask)
 		{
 			const auto biped = a_self.As<RE::BGSBipedObjectForm>();
-			return biped ? biped->bipedModelData.bipedObjectSlots |= a_slotMask : 0;
+			if (!biped) {
+				return 0;
+			}
+
+			auto& slots = biped->bipedModelData.bipedObjectSlots;
+			slots = static_cast<RE::BIPED_MODEL::BipedObjectSlot>(slots.underlying() | a_slotMask);
+			return slots.underlying();
 		}
 
 		inline std::string GetDescription(const RE::TESForm& a_self)
@@ -103,7 +109,7 @@ namespace Papyrus
 		inline std::uint32_t GetSlotMask(const RE::TESForm& a_self)
 		{
 			const auto biped = a_self.As<RE::BGSBipedObjectForm>();
-			return biped ? biped->GetFilledSlots() : 0;
+			return biped ? biped->GetFilledSlots().underlying() : 0;
 		}
 
 		inline float GetWeight(const RE::TESForm& a_self)
@@ -129,7 +135,13 @@ namespace Papyrus
 			std::uint32_t a_slotMask)
 		{
 			const auto biped = a_self.As<RE::BGSBipedObjectForm>();
-			return biped ? biped->bipedModelData.bipedObjectSlots &= ~a_slotMask : 0;
+			if (!biped) {
+				return 0;
+			}
+
+			auto& slots = biped->bipedModelData.bipedObjectSlots;
+			slots = static_cast<RE::BIPED_MODEL::BipedObjectSlot>(slots.underlying() & ~a_slotMask);
+			return slots.underlying();
 		}
 
 		inline void SetEnchantment(
@@ -212,7 +224,7 @@ namespace Papyrus
 		{
 			const auto biped = a_self.As<RE::BGSBipedObjectForm>();
 			if (biped) {
-				biped->bipedModelData.bipedObjectSlots = a_slotMask;
+				biped->bipedModelData.bipedObjectSlots = static_cast<RE::BIPED_MODEL::BipedObjectSlot>(a_slotMask);
 			}
 		}
 
