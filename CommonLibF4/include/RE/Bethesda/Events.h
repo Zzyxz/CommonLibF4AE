@@ -590,7 +590,13 @@ namespace RE
 
 		void SetAllDamageToZero()
 		{
-			flags &= 0xFFFFFE07;
+			flags.reset(
+				Flag::kCritical,
+				Flag::kCriticalOnDeath,
+				Flag::kFatal,
+				Flag::kDismemberLimb,
+				Flag::kExplodeLimb,
+				Flag::kCrippleLimb);
 			healthDamage = 0.0F;
 			targetedLimbDamage = 0.0F;
 			resistedPhysicalDamage = 0.0F;
@@ -622,7 +628,7 @@ namespace RE
 		float pushBack;                                                           // B8
 		float reflectedDamage;                                                    // BC
 		float criticalDamageMult;                                                 // C0
-		std::uint32_t flags;                                                      // C4
+		stl::enumeration<Flag, std::uint32_t> flags;                              // C4
 		BGSEquipIndex equipIndex;                                                 // C8
 		std::uint32_t material;                                                   // D0
 		stl::enumeration<BGSBodyPartDefs::LIMB_ENUM, std::uint32_t> damageLimb;    // D4

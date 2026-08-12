@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RE/Bethesda/BGSMod.h"
+#include "RE/Bethesda/BGSEquipIndex.h"
 #include "RE/Bethesda/BSFixedString.h"
 #include "RE/Bethesda/BSLock.h"
 #include "RE/Bethesda/BSStringT.h"
@@ -19,6 +20,9 @@
 
 namespace RE
 {
+	template <class>
+	class BGSObjectInstanceT;
+
 	enum class CHUNK_ID;
 	enum class SOUND_LEVEL;
 	enum class STAGGER_MAGNITUDE;
@@ -538,6 +542,16 @@ namespace RE
 			using func_t = decltype(&TESObjectWEAP::UnregisterWeaponFiredEvent);
 			REL::Relocation<func_t> func{ REL::ID(2198915) };
 			return func(a_sink);
+		}
+
+		static void EjectShellCasing(
+			TESObjectREFR& a_reference,
+			const BGSObjectInstanceT<TESObjectWEAP>& a_weapon,
+			BGSEquipIndex a_equipIndex)
+		{
+			using func_t = decltype(&TESObjectWEAP::EjectShellCasing);
+			REL::Relocation<func_t> func{ REL::ID(2198917) };
+			return func(a_reference, a_weapon, a_equipIndex);
 		}
 
 		struct RangedData

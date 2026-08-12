@@ -19,8 +19,24 @@
 
 namespace RE
 {
+	namespace InventoryInterface
+	{
+		struct Handle;
+	}
+
 	enum class ACTOR_CRITICAL_STAGE;
-	enum class ACTOR_LIFE_STATE;
+	enum class ACTOR_LIFE_STATE : std::int32_t
+	{
+		kAlive = 0x0,
+		kDying = 0x1,
+		kDead = 0x2,
+		kUnconscious = 0x3,
+		kReanimate = 0x4,
+		kRecycle = 0x5,
+		kRestrained = 0x6,
+		kEssentialDown = 0x7,
+		kBleedout = 0x8
+	};
 	enum class ACTOR_LOS_LOCATION;
 	enum class ATTACK_STATE_ENUM;
 	enum class DEFAULT_OBJECT;
@@ -47,6 +63,7 @@ namespace RE
 	class ActorPackageLoadFormBuffer;
 	class AimModel;
 	class AIProcess;
+	class BGSBodyPartData;
 	class BGSSaveFormBuffer;
 	class bhkCharacterController;
 	class bhkCharacterMoveFinishEvent;
@@ -719,7 +736,7 @@ namespace RE
 		std::uint32_t staggered: 1;             // 0C:09
 		std::uint32_t inWrongProcessLevel: 1;   // 0C:10
 		std::uint32_t stance: 3;                // 0C:11
-		std::uint32_t gunState: 4;              // 0C:14
+		GUN_STATE gunState: 4;                  // 0C:14
 		INTERACTING_STATE interactingState: 2;  // 0C:18
 		std::uint32_t headTrackRotation: 1;     // 0C:20
 		std::uint32_t inSyncAnim: 1;            // 0C:21
@@ -955,6 +972,13 @@ namespace RE
 		[[nodiscard]] TESAmmo* GetCurrentAmmo(BGSEquipIndex a_equipIndex) const
 		{
 			return currentProcess ? currentProcess->GetCurrentAmmo(a_equipIndex) : nullptr;
+		}
+
+		[[nodiscard]] BGSBodyPartData* GetBodyPartData()
+		{
+			using func_t = decltype(&Actor::GetBodyPartData);
+			REL::Relocation<func_t> func{ REL::ID(2229571) };
+			return func(this);
 		}
 
 		[[nodiscard]] BGSObjectInstance GetEquippedItem(BGSEquipIndex a_equipIndex) const
@@ -1252,7 +1276,7 @@ namespace RE
 		BSTSmartPointer<BipedAnim> biped;                                    // 428
 		BSNonReentrantSpinLock addingToOrRemovingFromScene;                  // 430
 		BSReadWriteLock perkArrayLock;                                       // 434
-		std::uint32_t flags;                                                 // 43C
+		stl::enumeration<BOOL_FLAGS, std::uint32_t> boolFlags;               // 43C
 		std::uint32_t moreFlags;                                             // 440
 		Modifiers healthModifiers;                                           // 444
 		Modifiers actionPointsModifiers;                                     // 450
@@ -1312,6 +1336,19 @@ namespace RE
 			using func_t = decltype(&ActorEquipManager::UnequipObject);
 			REL::Relocation<func_t> func{ REL::ID(2231395) };
 			return func(this, a_actor, a_object, a_number, a_slot, a_stackID, a_queueEquip, a_forceEquip, a_playSounds, a_applyNow, a_slotBeingReplaced);
+		}
+
+		[[nodiscard]] bool ToggleEquipItem(
+			Actor* a_actor,
+			const InventoryInterface::Handle& a_item,
+			std::uint32_t a_stackID,
+			const BGSEquipSlot* a_slot,
+			bool a_arg5,
+			bool a_arg6)
+		{
+			using func_t = decltype(&ActorEquipManager::ToggleEquipItem);
+			REL::Relocation<func_t> func{ REL::ID(2231402) };
+			return func(this, a_actor, a_item, a_stackID, a_slot, a_arg5, a_arg6);
 		}
 	};
 	static_assert(sizeof(ActorEquipManager) == 0x60);

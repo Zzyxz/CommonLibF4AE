@@ -49,6 +49,13 @@ namespace RE
 			return func(this, a_actor, a_LOSCount);
 		}
 
+		void RunActorUpdate(Actor* a_actor, bool a_arg2, float a_delta)
+		{
+			using func_t = decltype(&ProcessLists::RunActorUpdate);
+			REL::Relocation<func_t> func{ REL::ID(2234074) };
+			return func(this, a_actor, a_arg2, a_delta);
+		}
+
 		// members
 		BSSemaphore movementSyncSema;                               // 010
 		float crimeUpdateTimer;                                     // 018

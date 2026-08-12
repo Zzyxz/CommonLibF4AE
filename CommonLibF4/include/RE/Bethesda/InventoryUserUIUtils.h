@@ -12,11 +12,33 @@ namespace RE
 	class PlayerCharacter;
 	class TESBoundObject;
 	class BGSInventoryItem;
+	struct InventoryUserUIInterfaceEntry;
 
 	class HUDModeType;
 
 	namespace InventoryUserUIUtils
 	{
+		inline void GetTotalDamageTypesInfo(Scaleform::GFx::Value& a_value)
+		{
+			using func_t = decltype(&GetTotalDamageTypesInfo);
+			REL::Relocation<func_t> func{ REL::ID(2222627) };
+			return func(a_value);
+		}
+
+		inline void GetTotalResistTypesInfo(Scaleform::GFx::Value& a_value, Scaleform::GFx::Value& a_resistTypes)
+		{
+			using func_t = decltype(&GetTotalResistTypesInfo);
+			REL::Relocation<func_t> func{ REL::ID(2222628) };
+			return func(a_value, a_resistTypes);
+		}
+
+		inline void GetItemHPGain(const InventoryUserUIInterfaceEntry& a_entry, Scaleform::GFx::Value& a_value)
+		{
+			using func_t = decltype(&GetItemHPGain);
+			REL::Relocation<func_t> func{ REL::ID(2222629) };
+			return func(a_entry, a_value);
+		}
+
 		namespace detail
 		{
 			inline void AddItemCardInfoEntry(

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RE/Bethesda/BGSInventoryItem.h"
+#include "RE/Bethesda/BGSEquipIndex.h"
 #include "RE/Bethesda/BSFixedString.h"
 #include "RE/Bethesda/BSSoundHandle.h"
 #include "RE/Bethesda/BSStringT.h"
@@ -230,16 +231,6 @@ namespace RE
 		NiPointer<SimpleAnimationGraphManagerLoadingTask> loadingTask;   // 10
 	};
 	static_assert(sizeof(SimpleAnimationGraphManagerHolder) == 0x18);
-
-	class BGSEquipIndex
-	{
-	public:
-		~BGSEquipIndex() noexcept {}  // NOLINT(modernize-use-equals-default)
-
-		// members
-		std::uint32_t index;  // 0
-	};
-	static_assert(sizeof(BGSEquipIndex) == 0x4);
 
 	struct SubgraphIdentifier
 	{

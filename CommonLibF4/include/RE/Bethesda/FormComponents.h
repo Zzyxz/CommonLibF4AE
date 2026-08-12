@@ -602,7 +602,7 @@ namespace RE
 					newArray[i] = array[i];
 				}
 				BGSTypedKeywordValue<TYPE> newValue;
-				newValue.keywordIndex = detail::BGSKeywordGetIndexForTypedKeyword(a_keyword, RE::BGSKeyword::KeywordType::kAttachPoint);
+				newValue.keywordIndex = detail::BGSKeywordGetIndexForTypedKeyword(a_keyword, TYPE);
 				newArray[size] = newValue;
 				mm.Deallocate(array, false);
 				array = newArray;
@@ -615,6 +615,22 @@ namespace RE
 			for (std::uint32_t i = 0; i < size; ++i) {
 				const auto kywd = detail::BGSKeywordGetTypedKeywordByIndex(TYPE, array[i].keywordIndex);
 				if (kywd == a_keyword) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool RemoveKeyword(RE::BGSKeyword* a_keyword)
+		{
+			if (!a_keyword) {
+				return false;
+			}
+
+			for (std::uint32_t i = 0; i < size; ++i) {
+				if (detail::BGSKeywordGetTypedKeywordByIndex(TYPE, array[i].keywordIndex) == a_keyword) {
+					std::move(array + i + 1, array + size, array + i);
+					--size;
 					return true;
 				}
 			}
@@ -1294,6 +1310,26 @@ namespace RE
 			return added;
 		}
 
+		bool RemoveObject(const TESBoundObject* a_object)
+		{
+			if (!a_object || !containerObjects) {
+				return false;
+			}
+
+			for (std::uint32_t i = 0; i < numContainerObjects; ++i) {
+				auto* entry = containerObjects[i];
+				if (entry && entry->obj == a_object) {
+					delete entry->itemExtra;
+					delete entry;
+					std::move(containerObjects + i + 1, containerObjects + numContainerObjects, containerObjects + i);
+					--numContainerObjects;
+					containerObjects[numContainerObjects] = nullptr;
+					return true;
+				}
+			}
+			return false;
+		}
+
 		// members
 		ContainerObject** containerObjects;  // 08
 		std::uint32_t numContainerObjects;   // 10
@@ -1599,6 +1635,52 @@ namespace RE
 		[[nodiscard]] constexpr bool Respawns() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kRespawn); }
 		[[nodiscard]] constexpr bool UsesOppositeGenderAnims() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kOppositeGenderanims); }
 		[[nodiscard]] constexpr bool UsesTemplate() const noexcept { return actorData.actorBaseFlags.all(ACTOR_BASE_DATA::Flag::kUsesTemplate); }
+
+		[[nodiscard]] bool HasFaction(const TESFaction* a_faction) const noexcept
+		{
+			if (!a_faction) {
+				return false;
+			}
+
+			for (std::uint32_t i = 0; i < factions.size(); ++i) {
+				if (factions[i].faction == a_faction) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool AddFaction(TESFaction* a_faction, std::int8_t a_rank)
+		{
+			if (!a_faction) {
+				return false;
+			}
+
+			for (std::uint32_t i = 0; i < factions.size(); ++i) {
+				if (factions[i].faction == a_faction) {
+					factions[i].rank = a_rank;
+					return true;
+				}
+			}
+
+			factions.push_back(FACTION_RANK{ a_faction, a_rank });
+			return true;
+		}
+
+		bool RemoveFaction(const TESFaction* a_faction)
+		{
+			if (!a_faction) {
+				return false;
+			}
+
+			for (auto it = factions.begin(); it != factions.end(); ++it) {
+				if (it->faction == a_faction) {
+					factions.erase(it);
+					return true;
+				}
+			}
+			return false;
+		}
 
 		// members
 		ACTOR_BASE_DATA actorData;        // 08

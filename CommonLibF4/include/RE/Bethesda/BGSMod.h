@@ -124,6 +124,13 @@ namespace RE::BGSMod
 			REL::Relocation<func_t> func{ REL::ID(2189206) };
 			return func(this, a_data);
 		}
+
+		void Set(const Data& a_data)
+		{
+			using func_t = decltype(&Container::Set);
+			REL::Relocation<func_t> func{ REL::ID(2189188) };
+			return func(this, a_data);
+		}
 	};
 	static_assert(sizeof(Container) == 0x10);
 
@@ -185,6 +192,16 @@ namespace RE::BGSMod
 				a_data.optional = optional;
 				a_data.childrenExclusive = childrenExclusive;
 				static_cast<const Container*>(this)->GetData(std::addressof(a_data));
+			}
+
+			void Set(const Data& a_data)
+			{
+				static_cast<Container*>(this)->Set(a_data);
+				targetFormType = *a_data.targetFormType;
+				maxRank = static_cast<std::uint8_t>(a_data.maxRank);
+				lvlsPerTierScaledOffset = static_cast<std::uint8_t>(a_data.lvlsPerTierScaledOffset);
+				optional = a_data.optional;
+				childrenExclusive = a_data.childrenExclusive;
 			}
 
 			TESObjectMISC* GetLooseMod()

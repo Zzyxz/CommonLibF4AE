@@ -45,6 +45,22 @@ namespace RE
 		static REL::Relocation<float> fWorldGravity{ REL::ID(2700340) };
 	};
 
+	namespace WeaponUtils
+	{
+		[[nodiscard]] inline bool GetAnimationTimes(
+			const TESObjectWEAP& a_weapon,
+			const TESObjectWEAP::InstanceData* a_instanceData,
+			float& a_time1,
+			float& a_time2,
+			float& a_time3,
+			float& a_time4)
+		{
+			using func_t = decltype(&GetAnimationTimes);
+			REL::Relocation<func_t> func{ REL::ID(2199154) };
+			return func(a_weapon, a_instanceData, a_time1, a_time2, a_time3, a_time4);
+		}
+	}
+
 	namespace AnimationSystemUtils
 	{
 		inline bool WillEventChangeState(const TESObjectREFR& ref, const BSFixedString& evn)
