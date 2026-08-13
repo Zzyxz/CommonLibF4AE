@@ -15,19 +15,19 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
         with:
           path: main
 
       - name: Setup vcpkg
         run: |
-          mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          New-Item -ItemType Directory -Force -Path ${{ env.VCPKG_DEFAULT_BINARY_CACHE }} | Out-Null
           cd $env:VCPKG_INSTALLATION_ROOT
           ./bootstrap-vcpkg.bat
           ./vcpkg --version > ${{ github.workspace }}/vcpkg-version.txt
 
       - name: Cache vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v6
         id: vcpkg-cache
         env:
           cache-name: vcpkg-cache
