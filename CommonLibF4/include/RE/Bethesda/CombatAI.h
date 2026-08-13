@@ -36,6 +36,13 @@ namespace RE
 	class CombatBehaviorContextFlankingMovement
 	{
 	public:
+		[[nodiscard]] bool CheckShouldStalk() const
+		{
+			using func_t = decltype(&CombatBehaviorContextFlankingMovement::CheckShouldStalk);
+			REL::Relocation<func_t> func{ REL::ID(2242175) };
+			return func(this);
+		}
+
 		[[nodiscard]] bool CheckShouldStop(float a_distance)
 		{
 			using func_t = decltype(&CombatBehaviorContextFlankingMovement::CheckShouldStop);
